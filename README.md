@@ -1,55 +1,30 @@
-# Muriel
+# Dusk für iPhone
 
-A lightweight desktop music player for Windows, Linux and macOS. Stream from YouTube, YouTube Music and SoundCloud, download for offline listening, and keep a local library — no account, no subscription.
+Ein dunkler Musikplayer mit ruhiger Oberfläche, drei Hauptbereichen, anpassbaren Themes und automatischer deutscher/englischer Sprachwahl. Technische Grundlage: [Muriel](https://github.com/cloverscripts/riff-muriel) und Riff, MIT-lizenziert. Die ursprüngliche Projektdokumentation liegt unter [docs/UPSTREAM_README.md](docs/UPSTREAM_README.md).
 
-Muriel is based on [Riff](https://github.com/rootscripts/riff) by rootscripts (MIT).
+![Dusk – funktionale Startseite und Einstellungen](design/dusk/app-integrated.jpg)
 
-> Muriel is an independent, non-commercial open-source project and is not affiliated with YouTube, Google,
-> SoundCloud, Spotify or Apple. It hosts no music. Use it for private listening and only download music you
-> have the right to. See [LEGAL.md](LEGAL.md) (also for rights holders).
+## Stand
 
-## Features
+Die mobile Oberfläche ist an Player, Suche, Bibliothek und Downloadverwaltung angeschlossen. Lokaler Audioimport, Wiedergabe, Pause, Spulen, Favoriten, Queue und Playlist-Erstellung sind im Browser geprüft. 317 Tests bestanden; einer übersprungen.
 
-- **Streaming & downloads** — YouTube, YouTube Music and SoundCloud via yt-dlp and ffmpeg (installed automatically on first run)
-- **Local library** — reads tags and album art, folders and playlists, original files stay untouched
-- **Lyrics** — online synced lyrics, LRC files, manual timing, fullscreen karaoke
-- **Audio** — EQ, presets, real-time speed, reverb, and a small editor for trimming and exporting clips
-- **Compact layout** — slim navigation rail, slide-over drawer for now playing, lyrics and the queue
-- **Custom background** — image, GIF or video, with optional glass blur on the interface; pauses while Muriel is hidden
-- **Performance settings** — lightweight thumbnails, blur on/off, visualizer frame-rate cap, memory trimming in the background, hardware acceleration toggle
+**YouTube-Wiedergabe ist noch nicht zuverlässig:** Der getestete Audioabruf wurde mit einer Bot-Anmeldung abgewiesen. Ein funktionierender Gesamtkatalog und YouTube-Offline-Downloads sind nicht zugesichert. Native Hintergrundwiedergabe und Sideloading brauchen einen echten iPhone-Test.
 
-## Getting started
+## iPhone-Build
 
-Requires Node.js 18 or newer.
+[Erfolgreicher Mac-Build mit Dusk-IPA](https://github.com/zxypablo11/dusk-ios/actions/runs/42917861317). Die IPA ist unsigniert und muss zur Installation mit einem Sideloading-Werkzeug signiert werden. Unter Actions → „Dusk iPhone test build“ lässt sich manuell ein neuer Build starten. Es gibt keine automatische Veröffentlichung.
 
-```bash
-git clone https://github.com/cloverscripts/riff-muriel.git
-cd riff-muriel
-npm install
-npm start
+## Lokal starten
+
+Node 22+:
+
+```sh
+npm ci
+node tools/build-locales.mjs
+node mobile/build.mjs
+node mobile/dev-server.mjs
 ```
 
-## Building
+Vorschau: http://127.0.0.1:5173
 
-```bash
-npm run dist
-```
-
-Installers land in `dist/`. Builds are unsigned: on macOS, right-click Muriel in Applications and choose Open; if macOS says the app is damaged, run `xattr -cr /Applications/Muriel.app`.
-
-## Data
-
-- Windows: `%LOCALAPPDATA%\Muriel`
-- macOS: `~/Library/Application Support/Muriel`
-- Linux: `~/.cache/muriel` (settings in `~/.config/muriel`)
-
-## Legal
-
-Muriel is a player: it doesn't host, upload or sell music, has no ads, accounts or tracking, and nobody earns
-money from it. You're responsible for using it in line with copyright and the terms of the services you use.
-Rights holders can reach us through a [rights holder request](https://github.com/cloverscripts/riff-muriel/issues/new?template=rights-holder-request.yml).
-Details, also in German: [LEGAL.md](LEGAL.md).
-
-## License
-
-MIT. See [LICENSE](LICENSE). Original Riff code © rootscripts.
+Tests: `npm test`. Architektur, Testumfang, Grenzen und Build-Anleitung: [DUSK.md](DUSK.md).

@@ -1,6 +1,6 @@
 # Dusk: mobile App und iPhone-Build
 
-Stand: 10. November 2026. Technische Basis bleibt Muriel 1.3.10 (MIT). Zielgerät ist ein iPhone 14; iOS 27 / 27.2 ist die vom Nutzer gemeldete Version. Es wurde kein IPA gebaut und kein echtes iPhone getestet.
+Stand: 10. November 2026. Technische Basis bleibt Muriel 1.3.10 (MIT). Zielgerät ist ein iPhone 14; iOS 27 / 27.2 ist die vom Nutzer gemeldete Version. Eine unsignierte IPA wurde auf dem GitHub-Mac-Runner gebaut und strukturell geprüft. Ein echtes iPhone wurde noch nicht getestet.
 
 ## Implementiert
 
@@ -57,7 +57,17 @@ Browserprüfung mit 390 × 844, 375 × 812 bei 150 % Schrift und Player bei 844 
 
 ## iPhone-Build
 
-Das native Projekt wurde mit Capacitor synchronisiert. Unter Linux wird kein Xcode-Build ausgeführt. Für den vom Nutzer gewählten GitHub-Mac-Runner steht `.github/workflows/dusk-ios.yml` bereit: nur `workflow_dispatch`, nur `contents: read`, kein Release/Pages-Publishing. Der Job installiert die festgeschriebenen Abhängigkeiten, erstellt den Webbuild, synchronisiert Capacitor, kompiliert unsigniert und lädt `Dusk.ipa` als 14 Tage verfügbares Actions-Artefakt hoch.
+Das native Projekt wurde mit Capacitor synchronisiert. Unter Linux wird kein Xcode-Build ausgeführt. Der GitHub-Mac-Build von Commit `8dfd6f70873bbbab9312cae2d03c79dd2262daa2` war erfolgreich:
+
+- Privates Repository: https://github.com/zxypablo11/dusk-ios
+- Build und Actions-Artefakt: https://github.com/zxypablo11/dusk-ios/actions/runs/42917861317
+- Lokaler Download: `dist-ipa/Dusk.ipa` (2.931.190 Bytes, unsigniert)
+- SHA-256: `5b093bd72394892da49795c12d15d556cddb4d76d823c090313916ad9ab6eb05`
+- Im Archiv geprüft: App-Name Dusk, Bundle-ID, DE/EN, iOS-Mindestversion 16.2, Assets.car, Weboberfläche und separate Erweiterungs-ID `io.github.zxypablo11.dusk.LyricsWidget`.
+
+Die Bilder `design/dusk/app-integrated.jpg`, `app-home-integrated.jpg` und `app-settings-integrated.jpg` zeigen die funktionale Browseroberfläche bei 390 × 844. Die späteren Dokumentations- und Bildcommits verändern den gebauten App-Code nicht.
+
+ Für den vom Nutzer gewählten GitHub-Mac-Runner steht `.github/workflows/dusk-ios.yml` bereit: nur `workflow_dispatch`, nur `contents: read`, kein Release/Pages-Publishing. Der Job installiert die festgeschriebenen Abhängigkeiten, erstellt den Webbuild, synchronisiert Capacitor, kompiliert unsigniert und lädt `Dusk.ipa` als 14 Tage verfügbares Actions-Artefakt hoch.
 
 Lokal auf macOS mit Xcode und Node 22+:
 

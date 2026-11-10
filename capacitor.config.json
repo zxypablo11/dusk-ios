@@ -1,0 +1,16 @@
+{
+  "appId": "io.github.zxypablo11.dusk",
+  "appName": "Dusk",
+  "webDir": "www",
+  "backgroundColor": "#131416",
+  "ios": {
+    "contentInset": "never",
+    "scheme": "App",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "CapacitorHttp": {
+      "enabled": true
+    }
+  }
+}

@@ -1,0 +1,81 @@
+/* Dusk uses color and cover art for character; the chrome stays quiet. */
+:root { --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+.app-logo { gap: 8px; }
+.app-logo .dusk-mark { width: 22px; height: 22px; flex: 0 0 22px; }
+.app-logo .logo-text { font-family: system-ui, -apple-system, sans-serif; font-size: 19px; font-weight: 600; letter-spacing: -.45px; }
+#splash-logo .dusk-mark { width: 44px; height: 44px; animation: none; }
+html.dusk-active :is(.m3-organic-bg, .bg-mesh-layer, #cover-bg, #custom-bg, .np-ambient) { display: none !important; }
+html.dusk-active .dusk-legacy-appearance { display: none !important; }
+html.dusk-active :is(.logo-star, .playbar, .right-panel, .vibe-card) { box-shadow: none !important; filter: none; }
+html.dusk-active .btn-pill-primary { background: var(--dusk-accent); color: var(--dusk-on-accent); }
+html[data-dusk-hide-recent="true"] :is(#sp-quick-sec, #section-on-repeat) { display: none !important; }
+html[data-dusk-hide-recommendations="true"] :is(#sp-made-sec, #sp-trend-sec, #section-for-you) { display: none !important; }
+html[data-dusk-hide-artists="true"] :is(#sp-artists-sec, #section-home-artists) { display: none !important; }
+.dusk-settings { min-width: 0; }
+.dusk-settings .setting-item { gap: 12px; }
+.dusk-hint { color: var(--md-sys-color-on-surface-variant); font-size: calc(12px * var(--font-scale, 1)); line-height: 1.55; margin: 8px 0; }
+.dusk-theme-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.dusk-theme-card { background: transparent; color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 6px; display: flex; flex-direction: column; gap: 6px; text-align: left; font-size: 13px; min-width: 0; min-height: 110px; }
+.dusk-theme-card[aria-pressed="true"] { border-color: var(--md-sys-color-primary); outline: 1px solid var(--md-sys-color-primary); }
+.dusk-theme-card > span:not(.dusk-theme-swatch), .dusk-theme-card > small { padding: 0 3px; }
+.dusk-theme-swatch { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 24px 10px; gap: 5px; padding: 10px; width: 100%; border-radius: 7px; }
+.dusk-theme-swatch i { border-radius: 3px; }
+.dusk-theme-swatch i:last-child { grid-column: 1 / -1; width: 60%; }
+.dusk-selected { min-height: 15px; font-size: 10px; color: var(--md-sys-color-on-surface-variant); }
+.dusk-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.dusk-settings button, .dusk-editor button { min-height: 44px; }
+.dusk-switch-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 48px; }
+.dusk-switch-row input { width: 44px; height: 28px; flex: 0 0 44px; accent-color: var(--md-sys-color-primary); cursor: pointer; }
+.dusk-saved-list { margin-top: 10px; }
+.dusk-saved-row { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--md-sys-color-outline-variant); padding: 8px 0; }
+.dusk-saved-pick { display: flex; align-items: center; gap: 10px; flex: 1 1 120px; border: 0; background: transparent; color: var(--md-sys-color-on-surface); text-align: left; overflow-wrap: anywhere; }
+.dusk-saved-pick[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
+.dusk-color-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 14px; }
+.dusk-editor { color: var(--md-sys-color-on-surface); background: var(--md-sys-color-background-solid); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 24px; width: min(100% - 24px, 540px); max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px); padding: 0; margin: auto; overflow: hidden; }
+.dusk-editor::backdrop { background: rgb(0 0 0 / .72); }
+.dusk-editor form { display: flex; flex-direction: column; max-height: inherit; }
+.dusk-editor-header { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
+.dusk-editor-header h2 { font-size: 20px; font-weight: 600; }
+.dusk-editor-body { padding: 20px; overflow: auto; overscroll-behavior: contain; }
+.dusk-editor-footer { padding: 12px 20px; border-top: 1px solid var(--md-sys-color-outline-variant); }
+.dusk-editor-footer button { width: 100%; }
+.dusk-theme-preview { padding: 18px; margin-bottom: 20px; border-radius: var(--preview-radius); background: var(--preview-background); color: var(--preview-text); border: 1px solid var(--preview-elevated); }
+.dusk-preview-brand { font-size: 16px; font-weight: 600; }
+.dusk-preview-song { display: flex; align-items: center; gap: 12px; margin: 18px 0; background: var(--preview-surface); padding: 10px; border-radius: var(--preview-radius); }
+.dusk-preview-song > svg { flex: 0 0 42px; width: 42px; height: 42px; }
+.dusk-preview-song > div { min-width: 0; flex: 1; }
+.dusk-preview-song strong { display: block; font-size: calc(14px * var(--preview-scale)); font-weight: 600; overflow-wrap: anywhere; }
+.dusk-preview-song div > span { display: block; margin-top: 4px; color: var(--preview-muted); font-size: calc(12px * var(--preview-scale)); }
+.dusk-preview-play { color: var(--preview-accent); }
+.dusk-preview-progress { height: 3px; background: var(--preview-elevated); border-radius: 2px; }
+.dusk-preview-progress i { display: block; height: 3px; width: 42%; background: var(--preview-accent); border-radius: 2px; }
+.dusk-field { display: flex; flex-direction: column; gap: 12px; margin: 20px 0; font-size: 14px; }
+.dusk-field > span { display: flex; justify-content: space-between; gap: 12px; }
+.dusk-field input[type="text"] { min-height: 44px; width: 100%; padding: 10px 12px; border: 1px solid var(--md-sys-color-outline); border-radius: 10px; background: var(--md-sys-color-surface-container); color: inherit; font-size: 16px; }
+.dusk-field input[type="range"] { width: 100%; min-height: 44px; accent-color: var(--md-sys-color-primary); }
+.dusk-colors, .dusk-home-fields { border: 0; padding: 0; min-width: 0; margin-top: 24px; }
+.dusk-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; }
+.dusk-colors legend, .dusk-home-fields legend { margin-bottom: 12px; font-size: 16px; font-weight: 600; }
+.dusk-colors label { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 13px; }
+.dusk-colors input { min-width: 44px; width: 44px; height: 44px; border: 0; padding: 4px; background: transparent; cursor: pointer; }
+.dusk-editor-error { color: var(--md-sys-color-error); font-size: 14px; line-height: 1.5; margin-top: 16px; }
+.dusk-editor-error:empty { display: none; }
+:is(.dusk-settings, .dusk-editor) :is(button, input):focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 3px; }
+:is(.dusk-settings, .dusk-editor) button:active { opacity: .7; }
+html.is-mobile .app-logo .logo-text { font-size: 19px; }
+html.is-mobile .dusk-editor { border-radius: 22px; }
+@media (max-width: 374px) { .dusk-theme-gallery { grid-template-columns: 1fr 1fr; } .dusk-colors { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) { .dusk-editor *, .dusk-settings * { transition: none !important; animation: none !important; } }
+body:not(.mini) .titlebar .app-logo { position: static; transform: none; pointer-events: auto; }
+body:not(.mini) .titlebar .logo-text { display: inline; }
+html.is-mobile body:has(#view-settings.active) .top-nav { display: none !important; }
+.dusk-switch-row input { appearance: none; position: relative; background: var(--md-sys-color-surface-container-highest); border: 1px solid var(--md-sys-color-outline); border-radius: 999px; transition: background .15s; }
+.dusk-switch-row input::before { content: ''; display: block; width: 20px; height: 20px; border-radius: 50%; background: var(--md-sys-color-on-surface); position: absolute; left: 3px; top: 3px; transition: transform .15s; }
+.dusk-switch-row input:checked { background: var(--md-sys-color-primary); border-color: var(--md-sys-color-primary); }
+.dusk-switch-row input:checked::before { background: var(--md-sys-color-on-primary); transform: translateX(16px); }
+.dusk-editor-header h2 { font-size: 18px; }
+html.dusk-active :is(.home-ambient, .my-wave-ambient-light, .tvk-ambient-bg, .fx-free[data-fx="ambient"]) { display: none !important; }
+html.dusk-active.is-mobile #right-panel { background: var(--md-sys-color-background-solid) !important; }
+html.dusk-active.is-mobile body.np-open .playbar { background: var(--md-sys-color-background-solid) !important; }
+html.is-mobile body:has(#view-settings.active) .app-layout { top: calc(var(--safe-top) + 56px) !important; }
+html.is-mobile .settings-view > .section-title { font-size: 26px; font-weight: 600; letter-spacing: -.5px; }

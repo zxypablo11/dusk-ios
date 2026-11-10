@@ -1,0 +1,35 @@
+name: Dusk iPhone test build
+on:
+  workflow_dispatch:
+    inputs:
+      bundle_id:
+        description: 'Your own reverse-DNS Dusk app identifier'
+        required: true
+        type: string
+        default: io.github.zxypablo11.dusk
+permissions:
+  contents: read
+jobs:
+  ipa:
+    runs-on: macos-15
+    timeout-minutes: 20
+    env:
+      ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
+      DUSK_BUNDLE_ID: ${{ inputs.bundle_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Build unsigned Dusk IPA
+        run: bash tools/build-dusk-ios.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Dusk-iPhone
+          path: dist/Dusk.ipa
+          if-no-files-found: error
+          retention-days: 14

@@ -199,17 +199,19 @@
         if (tracks.length) {
           const hero = node('article', 'dusk-hero');
           const art = cover(tracks[0], 'dusk-hero-cover');
+          const startHero = () => play(tracks[0], tracks, 0);
+          art.addEventListener('click', (e) => { if (!e.target.closest('button')) startHero(); });
           const caption = node('div', 'dusk-hero-caption');
           const text = node('div');
           text.append(node('h2', '', tracks[0].title || I.T('Untitled'), true), node('p', '', tracks[0].artist || '', true));
-          caption.append(text, button('Play recommendations', 'play', () => play(tracks[0], tracks, 0)));
+          caption.append(text, button('Play recommendations', 'play', startHero));
           art.append(caption);
           hero.append(art);
           homeContent.append(hero);
           if (homeFilter === 'for-you' && tracks.length > 1) {
             const sec = section('Listen next');
             const rail = node('div', 'dusk-rail');
-            tracks.slice(1, 12).forEach((track, i) => rail.append(trackTile(track, tracks, i + 1)));
+            tracks.slice(1, 14).forEach((track, i) => rail.append(trackTile(track, tracks, i + 1)));
             sec.append(rail);
           }
           if (homeFilter === 'new') { const sec = section('Trending now'); tracks.slice(1, 16).forEach((track,i) => sec.append(trackRow(track, tracks, i + 1))); }

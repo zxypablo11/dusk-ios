@@ -7633,6 +7633,43 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
+  function duskSearchPlatforms(query) {
+    const q = String(query || '').toLowerCase();
+    if (/soundcloud\.com/.test(q)) return ['soundcloud'];
+    if (/music\.youtube\.com/.test(q)) return ['ytmusic'];
+    if (/youtube\.com|youtu\.be/.test(q)) return ['youtube'];
+    // Music-first auto order; SoundCloud fills in when YT/YTM are empty or blocked.
+    return ['ytmusic', 'youtube', 'soundcloud'];
+  }
+
+  async function fetchSearchPlatform(query, platform, limit) {
+    const searchUrl = `http://127.0.0.1:${state.serverPort}/api/search?q=${encodeURIComponent(query)}&platform=${platform}&limit=${limit}`;
+    const res = await fetch(searchUrl);
+    const data = await res.json();
+    if (!data || !data.success || !Array.isArray(data.tracks)) {
+      throw new Error((data && data.error) || 'Failed to load search results');
+    }
+    return data.tracks;
+  }
+
+  async function fetchDuskAutoSearch(query, limit) {
+    const platforms = duskSearchPlatforms(query);
+    let lastErr = null;
+    for (const platform of platforms) {
+      try {
+        const tracks = await fetchSearchPlatform(query, platform, limit);
+        if (tracks.length) {
+          state.platform = platform;
+          return tracks;
+        }
+      } catch (err) {
+        lastErr = err;
+      }
+    }
+    if (lastErr) throw lastErr;
+    return [];
+  }
+
   async function performSearch(query) {
     if (!query || !query.trim()) return;
     // a shared playlist link pasted into the search bar adds the playlist
@@ -7675,26 +7712,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (el.searchTracksList) el.searchTracksList.innerHTML = `<div class="empty-hint" data-i18n>Offline: connect to the internet to search new tracks</div>`;
         return;
       }
-      const searchUrl = `http://127.0.0.1:${state.serverPort}/api/search?q=${encodeURIComponent(state.searchQuery)}&platform=${state.platform}&limit=20`;
-      const res = await fetch(searchUrl);
-      const data = await res.json();
+      const duskAuto = document.documentElement.classList.contains('dusk-mobile');
+      const tracks = duskAuto
+        ? await fetchDuskAutoSearch(state.searchQuery, 20)
+        : await fetchSearchPlatform(state.searchQuery, state.platform, 20);
       if (state.searchToken !== searchToken) return;
 
-      if (!data.success || !data.tracks) {
-        if (state.platform === 'ytmusic') showToast(Tm('YouTube Music is unavailable'));
-        throw new Error(data.error || 'Failed to load search results');
+      if (!tracks.length) {
+        if (el.searchTracksList) el.searchTracksList.innerHTML = `<div class="empty-hint" data-i18n>No results</div>`;
+        state.searchResults = [];
+        return;
       }
 
-      state.searchResults = data.tracks;
+      state.searchResults = tracks;
 
       requestAnimationFrame(() => {
-        if (el.searchTracksList) renderTracks(el.searchTracksList, data.tracks, 'search');
+        if (el.searchTracksList) renderTracks(el.searchTracksList, tracks, 'search');
       });
 
       const showArtists = localStorage.getItem('muriel_search_artists') !== '0';
-      const trimmedQuery = query.trim();
       if (showArtists && trimmedQuery.length >= 3) {
-        fetchArtistCardForSearch(trimmedQuery, searchToken, data.tracks);
+        fetchArtistCardForSearch(trimmedQuery, searchToken, tracks);
       }
     } catch (err) {
       if (state.searchToken !== searchToken) return;

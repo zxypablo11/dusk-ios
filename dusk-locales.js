@@ -1156,7 +1156,8 @@
   "Unknown artist": "Unbekannter Künstler",
   "Appearance": "Darstellung",
   "Available offline": "Offline verfügbar",
-  "Language & interface": "Sprache & Oberfläche"
+  "Language & interface": "Sprache & Oberfläche",
+  "Quiet nights, Sakura petals, ink mist — light motion, offline.": "Ruhige Nächte, Sakura-Blüten, Tusche-Nebel — leichte Bewegung, offline."
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = { de };
 else root.DuskLocales = { de };

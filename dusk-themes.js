@@ -14,16 +14,30 @@
   document.head.appendChild(tokens);
   const root = document.documentElement;
   const status = message => I.text($('dusk-theme-status'), message);
+  function ensureFxLayer() {
+    let layer = document.getElementById('dusk-fx');
+    if (layer) return layer;
+    layer = document.createElement('div');
+    layer.id = 'dusk-fx';
+    layer.setAttribute('aria-hidden', 'true');
+    for (let i = 0; i < 6; i++) layer.append(document.createElement('i'));
+    document.body.prepend(layer);
+    return layer;
+  }
   function reapply() {
     root.classList.toggle('dusk-active', state.enabled);
     if (!state.enabled) {
       tokens.textContent = '';
+      root.dataset.duskFx = 'none';
       for (const key of ['recent', 'recommendations', 'artists']) delete root.dataset['duskHide' + key[0].toUpperCase() + key.slice(1)];
       return;
     }
     document.body.classList.remove('theme-light');
     document.body.classList.add('theme-dark');
     const t = state.active, c = t.colors;
+    const fx = C.normalizeFx(t.fx);
+    ensureFxLayer();
+    root.dataset.duskFx = fx;
     const onAccent = C.contrast(c.accent, '#000000') >= C.contrast(c.accent, '#ffffff') ? '#000000' : '#ffffff';
     const vars = {};
     for (const [key, value] of Object.entries({
@@ -114,7 +128,7 @@
   let returnFocus;
   function draft() {
     return {
-      version: C.VERSION, name: $('dusk-theme-name').value,
+      version: C.VERSION, name: $('dusk-theme-name').value, fx: state.active.fx || 'none',
       colors: Object.fromEntries([...dialog.querySelectorAll('[data-color]')].map(n => [n.dataset.color, n.value])),
       radius: Number($('dusk-radius').value), fontScale: Number($('dusk-font-scale').value),
       sections: Object.fromEntries([...dialog.querySelectorAll('[data-section]')].map(n => [n.dataset.section, n.checked])),
@@ -167,6 +181,8 @@
       button.setAttribute('aria-label', theme.name);
       const swatch = document.createElement('span'); swatch.className = 'dusk-theme-swatch'; swatch.setAttribute('aria-hidden', 'true');
       swatch.style.backgroundColor = theme.colors.background;
+      const fx = C.normalizeFx(theme.fx);
+      if (fx !== 'none') swatch.dataset.fx = fx;
       for (const color of [theme.colors.surface, theme.colors.elevated, theme.colors.accent]) {
         const shape = document.createElement('i'); shape.style.backgroundColor = color; swatch.append(shape);
       }

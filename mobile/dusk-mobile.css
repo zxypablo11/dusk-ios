@@ -634,38 +634,248 @@ html.dusk-mobile #scrubber-track { display: none !important; }
 .dusk-playback-status { margin: 0; font-size: calc(12px * var(--dusk-scale)); line-height: 1.45; color: var(--dusk-quiet); }
 .dusk-playback-status:empty { display: none; }
 
+/* Settings: typography list on OLED — no Muriel card stacks / icon circles / soft pills. */
 html.dusk-mobile #view-settings > .section-title,
 html.dusk-mobile #view-settings .settings-view > .section-title,
 html.dusk-mobile #settings-nav { display: none !important; }
-html.dusk-mobile .settings-search-box {
-  margin: 2px 0 16px !important;
-  background: var(--dusk-lift) !important;
+html.dusk-mobile #view-settings {
+  --group-gap: 0;
+  --group-inner: 0;
+  --group-outer: 0;
+}
+html.dusk-mobile #view-settings .settings-layout {
+  gap: 0 !important;
+  background: transparent !important;
+}
+html.dusk-mobile #view-settings .settings-pane { padding: 0 !important; }
+html.dusk-mobile #view-settings .settings-pane-head {
+  margin: 0 0 18px !important;
+  padding: 0 !important;
+  gap: 10px !important;
+  background: transparent !important;
   border: 0 !important;
-  border-radius: 10px !important;
+}
+html.dusk-mobile #view-settings .settings-pane-title {
+  font-size: calc(22px * var(--dusk-scale)) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.4px;
+  color: var(--dusk-ink) !important;
+}
+html.dusk-mobile #view-settings .settings-pane-head .btn-icon-pill,
+html.dusk-mobile #view-settings .settings-back {
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: var(--dusk-ink) !important;
+  box-shadow: none !important;
+}
+html.dusk-mobile .settings-search-box {
+  margin: 2px 0 22px !important;
+  padding: 12px 14px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--dusk-ink) 12%, transparent) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+html.dusk-mobile .settings-search-box input {
+  background: transparent !important;
+  border: 0 !important;
+  color: var(--dusk-ink) !important;
+  font-size: calc(16px * var(--dusk-scale)) !important;
+}
+html.dusk-mobile #view-settings .settings-section {
+  margin: 0 0 28px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+html.dusk-mobile #view-settings .settings-section-title {
+  margin: 0 0 8px !important;
+  font-size: calc(22px * var(--dusk-scale)) !important;
+  font-weight: 600 !important;
+  letter-spacing: -.35px;
+  color: var(--dusk-ink) !important;
+}
+html.dusk-mobile #view-settings .settings-group-title {
+  margin: 22px 0 6px !important;
+  padding: 0 !important;
+  font-size: calc(12px * var(--dusk-scale)) !important;
+  font-weight: 500 !important;
+  letter-spacing: .02em;
+  text-transform: none !important;
+  color: var(--dusk-quiet) !important;
+}
+html.dusk-mobile #view-settings .settings-section > .settings-group-title:first-child { margin-top: 0 !important; }
+html.dusk-mobile #view-settings .m3-group {
+  gap: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+html.dusk-mobile #view-settings .m3-group > * {
+  border-radius: 0 !important;
+}
+html.dusk-mobile #view-settings :is(.setting-item, .effect-card, .hq-enhancer-card) {
+  margin: 0 !important;
+  padding: 16px 0 !important;
+  gap: 10px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-bottom: 1px solid color-mix(in srgb, var(--dusk-ink) 8%, transparent) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+html.dusk-mobile #view-settings .m3-group > :last-child { border-bottom: 0 !important; }
+html.dusk-mobile #view-settings .setting-item-top {
+  align-items: flex-start !important;
+  gap: 12px !important;
+}
+html.dusk-mobile #view-settings .setting-name {
+  font-size: calc(15px * var(--dusk-scale)) !important;
+  font-weight: 500 !important;
+  color: var(--dusk-ink) !important;
+}
+html.dusk-mobile #view-settings :is(.setting-hint, .dusk-hint, #offline-library-size, #music-folder-path, #download-folder-path, #device-vault-status, #export-account-hint) {
+  color: var(--dusk-quiet) !important;
+  font-size: calc(12px * var(--dusk-scale)) !important;
+  line-height: 1.5 !important;
+}
+/* Drop Muriel's circular icon badges inside settings rows */
+html.dusk-mobile #view-settings .setting-item-top > div > div[style*="border-radius: 50%"],
+html.dusk-mobile #view-settings .setting-item-top div[style*="border-radius: 50%"][style*="width: 32px"] {
+  display: none !important;
+}
+html.dusk-mobile #view-settings :is(.btn-outline-pill, .btn-pill-primary, .fps-cap-btn, .theme-mode-btn, .preset-chip) {
+  min-height: 36px !important;
+  padding: 8px 12px !important;
+  border-radius: 6px !important;
+  font-size: calc(13px * var(--dusk-scale)) !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  box-shadow: none !important;
+}
+html.dusk-mobile #view-settings .btn-outline-pill {
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--dusk-ink) 22%, transparent) !important;
+  color: var(--dusk-ink) !important;
+}
+html.dusk-mobile #view-settings .btn-pill-primary {
+  background: var(--dusk-ink) !important;
+  border: 0 !important;
+  color: var(--dusk-bg) !important;
+}
+html.dusk-mobile #view-settings :is(.fps-cap-btn, .theme-mode-btn, .preset-chip) {
+  background: transparent !important;
+  border: 1px solid color-mix(in srgb, var(--dusk-ink) 16%, transparent) !important;
+  color: var(--dusk-quiet) !important;
+}
+html.dusk-mobile #view-settings :is(.fps-cap-btn.active, .theme-mode-btn.active, .preset-chip.active) {
+  background: color-mix(in srgb, var(--dusk-ink) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--dusk-ink) 36%, transparent) !important;
+  color: var(--dusk-ink) !important;
+}
+html.dusk-mobile #view-settings .theme-mode-toggle {
+  gap: 8px !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+html.dusk-mobile #view-settings .ct-head,
+html.dusk-mobile #view-settings .ct-actions {
+  background: transparent !important;
+  border: 0 !important;
+  gap: 10px !important;
 }
 .dusk-settings-overview { display: none; }
 html.dusk-mobile #view-settings.settings-at-list:not(.settings-searching) .dusk-settings-overview { display: block; }
 html.dusk-mobile #view-settings.settings-at-list:not(.settings-searching) .settings-pane { display: none !important; }
 html.dusk-mobile #view-settings:not(.settings-at-list):not(.settings-searching) .settings-pane-head { display: flex !important; }
 html.dusk-mobile .settings-searching .dusk-settings-overview { display: none !important; }
-.dusk-more-settings { margin-top: 8px; padding: 0; background: transparent; }
+html.dusk-mobile .dusk-settings-overview .dusk-library-link {
+  min-height: 56px;
+  padding: 16px 0;
+  font-size: calc(17px * var(--dusk-scale));
+  font-weight: 500;
+  border-bottom: 1px solid color-mix(in srgb, var(--dusk-ink) 8%, transparent);
+}
+html.dusk-mobile .dusk-settings-overview .dusk-library-shortcuts { gap: 0; }
+.dusk-more-settings { margin-top: 18px; padding: 0; background: transparent; border: 0; }
 .dusk-more-settings summary {
-  min-height: 48px;
-  padding: 12px 0;
+  min-height: 44px;
+  padding: 14px 0;
   cursor: pointer;
   color: var(--dusk-quiet);
   font-size: calc(13px * var(--dusk-scale));
+  font-weight: 500;
   list-style: none;
+  border: 0;
 }
 .dusk-more-settings summary::-webkit-details-marker { display: none; }
-html.dusk-mobile .dusk-theme-gallery { grid-template-columns: 1fr 1fr; gap: 10px; }
+.dusk-more-settings[open] summary { color: var(--dusk-ink); }
+.dusk-more-settings .dusk-library-link {
+  min-height: 48px;
+  padding: 12px 0;
+  font-size: calc(15px * var(--dusk-scale));
+  border-bottom: 1px solid color-mix(in srgb, var(--dusk-ink) 8%, transparent);
+}
+html.dusk-mobile .dusk-theme-gallery { grid-template-columns: 1fr 1fr; gap: 12px; }
 html.dusk-mobile .dusk-theme-card {
-  min-height: 108px;
-  padding: 6px;
-  border-radius: 10px;
+  min-height: 118px;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+  gap: 8px;
+}
+html.dusk-mobile .dusk-theme-card[aria-pressed="true"] {
   background: transparent;
 }
-html.dusk-mobile .dusk-theme-swatch { grid-template-rows: 28px 8px; border-radius: 5px; }
+html.dusk-mobile .dusk-theme-card[aria-pressed="true"] .dusk-theme-swatch {
+  outline: 1px solid color-mix(in srgb, var(--dusk-ink) 55%, transparent);
+  outline-offset: 2px;
+}
+html.dusk-mobile .dusk-theme-swatch {
+  grid-template-rows: 36px 10px;
+  border-radius: 4px;
+  position: relative;
+  overflow: hidden;
+}
+html.dusk-mobile .dusk-theme-swatch[data-fx]::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .55;
+}
+html.dusk-mobile .dusk-theme-swatch[data-fx="sakura"]::after {
+  background:
+    radial-gradient(circle at 22% 30%, #f3c0d0 0 3px, transparent 4px),
+    radial-gradient(circle at 70% 55%, #e8a0b5 0 2.5px, transparent 3.5px),
+    radial-gradient(circle at 48% 78%, #f7d0dc 0 2px, transparent 3px);
+}
+html.dusk-mobile .dusk-theme-swatch[data-fx="ink"]::after {
+  background:
+    radial-gradient(ellipse 70% 40% at 30% 20%, color-mix(in srgb, #8fb9a8 35%, transparent), transparent 70%),
+    radial-gradient(ellipse 50% 35% at 80% 70%, color-mix(in srgb, #6a8a9a 28%, transparent), transparent 70%);
+}
+html.dusk-mobile .dusk-theme-swatch[data-fx="ember"]::after {
+  background:
+    radial-gradient(ellipse 60% 45% at 70% 30%, color-mix(in srgb, #e0a060 40%, transparent), transparent 70%),
+    radial-gradient(ellipse 40% 30% at 20% 80%, color-mix(in srgb, #c07040 28%, transparent), transparent 70%);
+}
+html.dusk-mobile .dusk-theme-swatch[data-fx="mist"]::after {
+  background:
+    linear-gradient(115deg, transparent 20%, color-mix(in srgb, #a1d9dc 22%, transparent) 45%, transparent 70%);
+}
 html.dusk-mobile .gs-retired { display: none !important; }
 
 html.dusk-mobile :is(.dusk-header,.dusk-tabbar,.dusk-home,.dusk-library,.dusk-player-head,.dusk-player-footer) button {

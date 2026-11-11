@@ -5,11 +5,14 @@
   const KEY = 'dusk_themes_v1';
   const MAX_BYTES = 16384;
   const MAX_SAVED = 24;
-  const palette = (name, background, surface, elevated, accent) => ({
+  const FX = Object.freeze(['none', 'sakura', 'ink', 'ember', 'mist']);
+  const normalizeFx = (value) => (FX.includes(value) ? value : 'none');
+  const palette = (name, background, surface, elevated, accent, fx = 'none') => ({
     version: VERSION, name,
     colors: { background, surface, elevated, accent, text: '#f5f5f7', muted: '#b2b5bf' },
     radius: 16, fontScale: 100,
     sections: { recent: true, recommendations: true, artists: true },
+    fx: normalizeFx(fx),
   });
   const PRESETS = [
     palette('Graphite', '#131416', '#202125', '#2b2d32', '#c0c5e8'),
@@ -17,7 +20,10 @@
     palette('Cobalt', '#10151e', '#1b2331', '#273347', '#a6c6ff'),
     palette('Violet', '#17141d', '#252030', '#342c40', '#cdb6f2'),
     palette('Ember', '#191512', '#29221e', '#3a2e27', '#ecbb96'),
-    palette('Ice', '#10191c', '#1b292d', '#27393d', '#a1d9dc'),
+    palette('Ice', '#10191c', '#1b292d', '#27393d', '#a1d9dc', 'mist'),
+    palette('Sakura', '#140e12', '#22181e', '#32242c', '#e8a0b8', 'sakura'),
+    palette('Ink', '#050607', '#121416', '#1c2226', '#8fb9a8', 'ink'),
+    palette('Lantern', '#120e0a', '#1f1812', '#2e241a', '#e0a060', 'ember'),
   ];
   function luminance(hex) {
     const values = [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16) / 255)
@@ -48,7 +54,15 @@
       if (typeof value.sections?.[field] !== 'boolean') throw new Error('Invalid home section settings.');
       sections[field] = value.sections[field];
     }
-    return { version: VERSION, name: value.name.trim(), colors, radius: value.radius, fontScale: value.fontScale, sections };
+    return {
+      version: VERSION,
+      name: value.name.trim(),
+      colors,
+      radius: value.radius,
+      fontScale: value.fontScale,
+      sections,
+      fx: normalizeFx(value.fx),
+    };
   }
   function parse(text) {
     if (typeof text !== 'string' || text.length > MAX_BYTES) throw new Error('Theme file is too large.');
@@ -73,7 +87,7 @@
     if (saved.length >= MAX_SAVED) throw new Error('You can save up to 24 themes.');
     return { version: VERSION, enabled: true, active, saved: [...saved, active] };
   }
-  const api = { VERSION, KEY, MAX_BYTES, MAX_SAVED, PRESETS, contrast, validate, parse, serialize, defaultState, readState, withSaved };
+  const api = { VERSION, KEY, MAX_BYTES, MAX_SAVED, FX, PRESETS, contrast, normalizeFx, validate, parse, serialize, defaultState, readState, withSaved };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.DuskThemeCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

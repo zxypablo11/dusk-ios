@@ -66,6 +66,25 @@ html.dusk-mobile .top-nav .platform-btn { min-width: 44px !important; min-height
   background: var(--dusk-bg);
   color: var(--dusk-ink);
 }
+.dusk-header.dusk-horizon-flash::after {
+  content: '';
+  position: absolute;
+  left: var(--dusk-pad);
+  right: var(--dusk-pad);
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--dusk-ink), transparent);
+  animation: dusk-horizon 1.15s ease-out forwards;
+  pointer-events: none;
+}
+@keyframes dusk-horizon {
+  0% { opacity: 0; transform: scaleX(.2); }
+  35% { opacity: .55; transform: scaleX(1); }
+  100% { opacity: 0; transform: scaleX(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dusk-header.dusk-horizon-flash::after { animation: none; opacity: 0; }
+}
 .dusk-header-brand { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
 .dusk-header-brand svg { width: 17px; height: 17px; flex: 0 0 17px; opacity: .85; }
 .dusk-header-brand h1 {
@@ -350,7 +369,7 @@ html.dusk-mobile .top-nav .platform-btn { min-width: 44px !important; min-height
 .dusk-primary-button {
   margin-top: 14px;
   border: 0;
-  border-radius: 999px;
+  border-radius: 8px;
   min-height: 44px;
   padding: 11px 18px;
   background: var(--dusk-ink);
@@ -494,6 +513,8 @@ html.dusk-mobile #right-panel {
   gap: 0 !important;
   overflow-y: auto !important;
 }
+/* Dusk player-head already closes the sheet — drop Muriel's grabber pill. */
+html.dusk-mobile #right-panel::before { display: none !important; }
 html.dusk-mobile #right-panel :is(.drawer-tabs, #btn-right-panel-art, #vinyl-overlay) { display: none !important; }
 .dusk-player-head {
   display: flex;
@@ -505,7 +526,18 @@ html.dusk-mobile #right-panel :is(.drawer-tabs, #btn-right-panel-art, #vinyl-ove
   flex: 0 0 44px;
   margin-bottom: 16px;
 }
-.dusk-player-head > span { font-size: calc(12px * var(--dusk-scale)); color: var(--dusk-quiet); }
+/* Keep for dialog labelling; no marketing eyebrow in the chrome. */
+.dusk-player-head > span {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 html.dusk-mobile #drawer-now { flex: 0 0 auto !important; overflow: visible !important; }
 html.dusk-mobile.is-mobile #right-panel #right-panel-artwork-box {
   display: flex !important;

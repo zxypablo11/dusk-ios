@@ -108,21 +108,26 @@
     if (tr === undefined) want(key);
     return tr;
   }
+  // Surface name is Dusk; keep upstream "Muriel" only in marked attribution (data-no-i18n).
+  function brand(s) {
+    if (typeof s !== 'string' || s.indexOf('uriel') === -1) return s;
+    return s.replace(/\bMuriel\b/g, 'Dusk');
+  }
   // text found on the page: numbers in it become slots
   function render(src) {
-    if (lang === 'en') return src;
+    if (lang === 'en') return brand(src);
     const key = norm(src);
     const n = numbered(key);
     const tr = n ? lookup(n.template) : lookup(key);
-    return tr === undefined ? src : keepSpace(src, n ? fill(tr, n.args) : tr);
+    return brand(tr === undefined ? src : keepSpace(src, n ? fill(tr, n.args) : tr));
   }
   // a string from code, taken as it is
   function plain(s) {
-    if (lang === 'en') return s;
+    if (lang === 'en') return brand(s);
     const tr = lookup(norm(s));
-    return tr === undefined ? s : keepSpace(s, tr);
+    return brand(tr === undefined ? s : keepSpace(s, tr));
   }
-  const T = (s) => (typeof s === 'string' && lang !== 'en' ? plain(s) : s);
+  const T = (s) => (typeof s === 'string' ? (lang !== 'en' ? plain(s) : brand(s)) : s);
   const Tf = (template, ...args) => fill(T(template), args);
   // a message that remembers what it was made of: showToast and text() translate it when it is shown and again
   // when a missing translation comes in; as a string it is Tf's result
@@ -424,6 +429,8 @@
   // ---------- start: before app.js, so the first paint is already in the right language ----------
   setRootAttrs();
   capture();
+  // English also needs a pass so leftover "Muriel" copy reads as Dusk.
+  applyStatics(false);
   if (lang !== 'en') {
     loadSnap();
     refresh(false);

@@ -62,6 +62,18 @@
     });
     const brand = node('div', 'dusk-header-brand');
     const heading = node('h1', '', 'Dusk', true); brand.append(heading);
+    // Quiet easter egg: seven taps on the wordmark draw the horizon once.
+    let brandTaps = 0, brandTapTimer = 0;
+    brand.addEventListener('click', () => {
+      clearTimeout(brandTapTimer);
+      brandTaps += 1;
+      brandTapTimer = setTimeout(() => { brandTaps = 0; }, 900);
+      if (brandTaps < 7) return;
+      brandTaps = 0;
+      header.classList.remove('dusk-horizon-flash');
+      void header.offsetWidth;
+      header.classList.add('dusk-horizon-flash');
+    });
     header.append(back, brand, button('Settings', 'settings', () => route('settings')));
     document.body.append(header);
     const nav = node('nav', 'dusk-tabbar'); nav.setAttribute('aria-label', I.T('Main navigation')); nav.id = 'dusk-tabbar';

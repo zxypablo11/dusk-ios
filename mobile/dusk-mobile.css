@@ -1016,7 +1016,7 @@ html.dusk-mobile body {
   .dusk-player-head { margin-bottom: 6px; }
   html.dusk-mobile.is-mobile #right-panel #cover-container { width: 120px !important; }
   html.dusk-mobile.is-mobile #right-panel #right-panel-artwork-box { gap: 10px !important; }
-  .dusk-hero-cover { max-height: 220px; }
+  .dusk-hero-cover { max-height: min(48vh, 280px); min-height: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
   html.dusk-mobile :is(.dusk-home,.dusk-library,.dusk-header,.dusk-tabbar,#right-panel,.dusk-hero,.dusk-section,.dusk-empty) {

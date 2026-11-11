@@ -3925,9 +3925,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!data || !data.success || !data.streamUrl) {
       if (!navigator.onLine) {
         showToast(Tm('Offline: this track is not available in local cache'));
-        throw new Error('Offline: track not cached locally');
+        const offline = new Error('Offline: track not cached locally');
+        offline.code = 'NETWORK';
+        window.dispatchEvent(new CustomEvent('muriel:stream-error', { detail: { code: 'NETWORK', message: offline.message, track } }));
+        throw offline;
       }
-      throw new Error((data && data.error) || 'Failed to extract audio stream');
+      const fail = new Error((data && data.error) || 'Failed to extract audio stream');
+      fail.code = (data && data.code) || '';
+      window.dispatchEvent(new CustomEvent('muriel:stream-error', { detail: { code: fail.code, message: fail.message, track } }));
+      throw fail;
     }
 
     if (hlsInstance) {

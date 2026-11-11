@@ -20,6 +20,7 @@
 		A997AFBB5970785F493C1A80 /* LyricsActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85F4C7D3DDC42408885FA46 /* LyricsActivityAttributes.swift */; };
 		B64C727F885970350D2752F1 /* LyricsActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D85F4C7D3DDC42408885FA46 /* LyricsActivityAttributes.swift */; };
 		B9078194C135DCAC0FCA7FE9 /* LyricsLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1599FB3093C916750E30C2D3 /* LyricsLiveActivity.swift */; };
+		C8A1D4E02FEA1001B00D4E01 /* DuskLibraryVaultPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8A1D4E02FEA1000B00D4E00 /* DuskLibraryVaultPlugin.swift */; };
 		D5C24490A8B454CAFEA5B9D0 /* MurielWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = D5F37E1A43908CC48D04191F /* MurielWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
@@ -51,6 +52,7 @@
 		15128E4A829ACA7359ADBDF1 /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1599FB3093C916750E30C2D3 /* LyricsLiveActivity.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LyricsLiveActivity.swift; sourceTree = "<group>"; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
+		C8A1D4E02FEA1000B00D4E00 /* DuskLibraryVaultPlugin.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuskLibraryVaultPlugin.swift; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = App.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		504EC3071FED79650016851F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -128,6 +130,7 @@
 				50B271D01FEDC1A000F3C39B /* public */,
 				D85F4C7D3DDC42408885FA46 /* LyricsActivityAttributes.swift */,
 				1599FB3093C916750E30C2D3 /* LyricsLiveActivity.swift */,
+				C8A1D4E02FEA1000B00D4E00 /* DuskLibraryVaultPlugin.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 				9582B6832FE993A70072D4E8 /* SceneDelegate.swift in Sources */,
 				A997AFBB5970785F493C1A80 /* LyricsActivityAttributes.swift in Sources */,
 				B9078194C135DCAC0FCA7FE9 /* LyricsLiveActivity.swift in Sources */,
+				C8A1D4E02FEA1001B00D4E01 /* DuskLibraryVaultPlugin.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -15,8 +15,8 @@ html[data-dusk-hide-artists="true"] :is(#sp-artists-sec, #section-home-artists) 
 .dusk-settings .setting-item { gap: 12px; }
 .dusk-hint { color: var(--md-sys-color-on-surface-variant); font-size: calc(12px * var(--font-scale, 1)); line-height: 1.55; margin: 8px 0; }
 .dusk-theme-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
-.dusk-theme-card { background: transparent; color: var(--md-sys-color-on-surface); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px; padding: 6px; display: flex; flex-direction: column; gap: 6px; text-align: left; font-size: 13px; min-width: 0; min-height: 110px; }
-.dusk-theme-card[aria-pressed="true"] { border-color: var(--md-sys-color-primary); outline: 1px solid var(--md-sys-color-primary); }
+.dusk-theme-card { background: transparent; color: var(--md-sys-color-on-surface); border: 0; border-radius: 10px; padding: 6px; display: flex; flex-direction: column; gap: 6px; text-align: left; font-size: 13px; min-width: 0; min-height: 110px; }
+.dusk-theme-card[aria-pressed="true"] { background: color-mix(in srgb, var(--md-sys-color-on-surface) 8%, transparent); }
 .dusk-theme-card > span:not(.dusk-theme-swatch), .dusk-theme-card > small { padding: 0 3px; }
 .dusk-theme-swatch { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 24px 10px; gap: 5px; padding: 10px; width: 100%; border-radius: 7px; }
 .dusk-theme-swatch i { border-radius: 3px; }
@@ -31,7 +31,7 @@ html[data-dusk-hide-artists="true"] :is(#sp-artists-sec, #section-home-artists) 
 .dusk-saved-pick { display: flex; align-items: center; gap: 10px; flex: 1 1 120px; border: 0; background: transparent; color: var(--md-sys-color-on-surface); text-align: left; overflow-wrap: anywhere; }
 .dusk-saved-pick[aria-pressed="true"] { text-decoration: underline; text-underline-offset: 4px; }
 .dusk-color-dot { width: 14px; height: 14px; border-radius: 50%; flex: 0 0 14px; }
-.dusk-editor { color: var(--md-sys-color-on-surface); background: var(--md-sys-color-background-solid); border: 1px solid var(--md-sys-color-outline-variant); border-radius: 24px; width: min(100% - 24px, 540px); max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px); padding: 0; margin: auto; overflow: hidden; }
+.dusk-editor { color: var(--md-sys-color-on-surface); background: var(--md-sys-color-background-solid); border: 1px solid color-mix(in srgb, var(--md-sys-color-on-surface) 12%, transparent); border-radius: 14px; width: min(100% - 24px, 540px); max-height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 24px); padding: 0; margin: auto; overflow: hidden; }
 .dusk-editor::backdrop { background: rgb(0 0 0 / .72); }
 .dusk-editor form { display: flex; flex-direction: column; max-height: inherit; }
 .dusk-editor-header { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--md-sys-color-outline-variant); }
@@ -63,7 +63,7 @@ html[data-dusk-hide-artists="true"] :is(#sp-artists-sec, #section-home-artists) 
 :is(.dusk-settings, .dusk-editor) :is(button, input):focus-visible { outline: 2px solid var(--md-sys-color-primary); outline-offset: 3px; }
 :is(.dusk-settings, .dusk-editor) button:active { opacity: .7; }
 html.is-mobile .app-logo .logo-text { font-size: 19px; }
-html.is-mobile .dusk-editor { border-radius: 22px; }
+html.is-mobile .dusk-editor { border-radius: 14px; }
 @media (max-width: 374px) { .dusk-theme-gallery { grid-template-columns: 1fr 1fr; } .dusk-colors { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .dusk-editor *, .dusk-settings * { transition: none !important; animation: none !important; } }
 body:not(.mini) .titlebar .app-logo { position: static; transform: none; pointer-events: auto; }

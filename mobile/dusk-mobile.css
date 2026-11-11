@@ -33,12 +33,12 @@ html.dusk-mobile body[data-dusk-view="discover"] .top-nav {
   margin: 0 !important;
   flex-direction: column !important;
   align-items: stretch !important;
-  gap: 10px !important;
-  height: 92px !important;
+  gap: 0 !important;
+  height: 52px !important;
   padding: 0 var(--dusk-pad) 8px !important;
   background: var(--dusk-bg) !important;
 }
-html.dusk-mobile body[data-dusk-view="discover"] .app-layout { top: calc(var(--safe-top) + 144px) !important; }
+html.dusk-mobile body[data-dusk-view="discover"] .app-layout { top: calc(var(--safe-top) + 104px) !important; }
 html.dusk-mobile .search-box {
   background: var(--dusk-lift) !important;
   border: 0 !important;
@@ -48,9 +48,9 @@ html.dusk-mobile .search-box {
 html.dusk-mobile #search-input { font-size: 16px !important; }
 html.dusk-mobile :is(.search-box-wrapper, .search-box) { min-width: 0 !important; }
 html.dusk-mobile .top-nav .search-box-wrapper { width: 100% !important; flex: 0 0 auto !important; }
-html.dusk-mobile .top-nav .platform-switch-container { align-self: flex-start; margin: 0 !important; }
 html.dusk-mobile .top-nav .search-box { transform: none !important; min-height: 44px !important; }
-html.dusk-mobile .top-nav .platform-btn { min-width: 44px !important; min-height: 44px !important; }
+/* Dusk picks the source itself — no YouTube / YT Music / SoundCloud chrome. */
+html.dusk-mobile .platform-switch-container { display: none !important; }
 
 .dusk-header {
   position: fixed;

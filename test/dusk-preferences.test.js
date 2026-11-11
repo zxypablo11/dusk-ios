@@ -73,11 +73,28 @@ test('locale placeholders are intact; Dusk and primary music terms are reviewed'
 test('all presets preserve readable text on every surface and survive export/import', () => {
   for (const p of C.PRESETS) {
     assert.deepEqual(C.parse(C.serialize(p)), C.validate(p));
+    assert.ok(C.FX.includes(p.fx));
     for (const surface of ['background','surface','elevated']) {
       assert.ok(C.contrast(p.colors.text,p.colors[surface]) >= 4.5);
       assert.ok(C.contrast(p.colors.muted,p.colors[surface]) >= 4.5);
     }
   }
+  assert.equal(C.PRESETS.find(p => p.name === 'Sakura').fx, 'sakura');
+  assert.equal(C.PRESETS.find(p => p.name === 'Ink').fx, 'ink');
+  assert.equal(C.PRESETS.find(p => p.name === 'Lantern').fx, 'ember');
+});
+
+test('theme fx is allowlisted and unknown values become none', () => {
+  assert.equal(C.normalizeFx('sakura'), 'sakura');
+  assert.equal(C.normalizeFx('hack'), 'none');
+  assert.equal(C.normalizeFx(undefined), 'none');
+  const base = copy(C.PRESETS[0]);
+  base.fx = 'not-a-real-fx';
+  assert.equal(C.validate(base).fx, 'none');
+  base.fx = 'ink';
+  assert.equal(C.validate(base).fx, 'ink');
+  const round = C.parse(C.serialize(base));
+  assert.equal(round.fx, 'ink');
 });
 
 test('theme import rejects executable values, unsupported versions, unreadable colors and corrupt documents', () => {

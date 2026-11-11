@@ -2,9 +2,15 @@
 // data folders, hardware acceleration) become no-ops; file pickers use the iOS document picker.
 const crypto = require('./shims/crypto');
 const store = require('./shims/store');
-const { Capacitor } = require('@capacitor/core');
+const { Capacitor, registerPlugin } = require('@capacitor/core');
 const { Share } = require('@capacitor/share');
 const { Filesystem, Directory, Encoding } = require('@capacitor/filesystem');
+
+const VaultPlugin = (() => {
+  try { return registerPlugin('DuskLibraryVault'); } catch (e) { return null; }
+})();
+const VAULT_LS = 'dusk_library_vault_v1';
+const VAULT_DOC = 'dusk-library.json';
 
 function pickFiles(accept, multiple) {
   return new Promise((resolve) => {
@@ -159,6 +165,68 @@ module.exports = function electronAPI({ ready, port, fs, fileUrlFor }) {
         if (e && /cancel/i.test(String(e.message || e))) return 'cancelled';
         try { await navigator.clipboard.writeText(text); return 'copied'; } catch (x) { return 'failed'; }
       }
+    },
+
+    // Lightweight library vault (playlists/favorites/themes metadata). Keychain on iOS survives reinstall;
+    // Documents gets a readable copy; browser/dev harness falls back to localStorage.
+    async vaultWrite(value) {
+      if (typeof value !== 'string' || !value) return { ok: false, error: 'Nothing to save' };
+      const bytes = value.length;
+      let keychain = false;
+      if (Capacitor.isNativePlatform() && VaultPlugin && typeof VaultPlugin.write === 'function') {
+        try {
+          await VaultPlugin.write({ value });
+          keychain = true;
+        } catch (e) {
+          return { ok: false, error: (e && e.message) || 'Could not save the library backup' };
+        }
+      } else {
+        try { localStorage.setItem(VAULT_LS, value); } catch (e) {
+          return { ok: false, error: (e && e.message) || 'Could not save the library backup' };
+        }
+      }
+      let documents = false;
+      if (Capacitor.isNativePlatform()) {
+        try {
+          await Filesystem.writeFile({
+            path: VAULT_DOC,
+            data: value,
+            directory: Directory.Documents,
+            encoding: Encoding.UTF8,
+            recursive: true,
+          });
+          documents = true;
+        } catch (e) { /* transparency copy only */ }
+      }
+      return { ok: true, bytes, keychain, documents };
+    },
+
+    async vaultRead() {
+      if (Capacitor.isNativePlatform() && VaultPlugin && typeof VaultPlugin.read === 'function') {
+        try {
+          const r = await VaultPlugin.read();
+          const value = r && r.value;
+          if (typeof value === 'string' && value) return { value, source: 'keychain' };
+        } catch (e) { /* fall through */ }
+        try {
+          const file = await Filesystem.readFile({ path: VAULT_DOC, directory: Directory.Documents, encoding: Encoding.UTF8 });
+          if (file && typeof file.data === 'string' && file.data) return { value: file.data, source: 'documents' };
+        } catch (e) { /* fall through */ }
+      }
+      try {
+        const value = localStorage.getItem(VAULT_LS);
+        if (value) return { value, source: 'local' };
+      } catch (e) {}
+      return { value: null };
+    },
+
+    async vaultClear() {
+      if (Capacitor.isNativePlatform() && VaultPlugin && typeof VaultPlugin.clear === 'function') {
+        try { await VaultPlugin.clear(); } catch (e) {}
+        try { await Filesystem.deleteFile({ path: VAULT_DOC, directory: Directory.Documents }); } catch (e) {}
+      }
+      try { localStorage.removeItem(VAULT_LS); } catch (e) {}
+      return { ok: true };
     },
   };
 };

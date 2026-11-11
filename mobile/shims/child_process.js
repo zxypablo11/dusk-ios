@@ -23,7 +23,8 @@ function fakeProcess(work) {
       p.emit('close', 0);
     } catch (e) {
       if (killed) return;
-      p.stderr.emit('data', `ERROR: ${e && e.message || e}`);
+      const code = e && e.code && typeof e.code === 'string' ? e.code : '';
+      p.stderr.emit('data', `ERROR:${code ? ` [${code}]` : ''} ${e && e.message || e}`);
       p.emit('close', 1);
     }
   }, 0);

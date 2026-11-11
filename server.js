@@ -1708,6 +1708,7 @@ async function downloadTrackToDisk(trackUrl, trackId, platform, meta = {}, prior
     if (downloadProcs.get(cleanId) === placeholder) downloadProcs.delete(cleanId);
     return true;
   };
+  let playFail = null;
   const job = ytdlpQueue.run(() => copyFromStream().then((copied) => (copied ? undefined : new Promise((resolve, reject) => {
     if (cancelled) { if (downloadProcs.get(cleanId) === placeholder) downloadProcs.delete(cleanId); return resolve(); }
     const proc = spawnYtDlp(cmd, priority, 'cache-download');
@@ -1738,12 +1739,16 @@ async function downloadTrackToDisk(trackUrl, trackId, platform, meta = {}, prior
           }
         } catch (e) {}
       } else {
-        const reason = (errText.match(/ERROR:[^\n]*/g) || []).pop();
+        const reason = (errText.match(/ERROR:[^\n]*/g) || []).pop() || '';
         try { logger.error('Download failure: ' + (meta.title || trackId) + ' (exit code ' + code + ')' + (reason ? ': ' + reason.slice(0, 300) : '')); } catch (_) {}
         if (found) try { await fs.promises.unlink(found); } catch (e) {}
         forbidden = /HTTP Error 403/i.test(errText);
         // a killed (skipped) download isn't a failure of the song
-        if (code !== null) return reject(new Error('download failed'));
+        if (code !== null) {
+          const fail = new Error(reason.replace(/^ERROR:\s*/, '').trim() || 'download failed');
+          fail.code = streamFailCode(reason) || streamFailCode(errText) || 'YT_NO_STREAM';
+          return reject(fail);
+        }
       }
       resolve();
     });
@@ -1752,10 +1757,19 @@ async function downloadTrackToDisk(trackUrl, trackId, platform, meta = {}, prior
       try { logger.error('Download spawn error: ' + (meta.title || trackId), err); } catch (_) {}
       reject(err);
     });
-  }))), { key: `dl:${cleanId}`, priority }).catch(() => {}).finally(() => { downloadingSet.delete(cleanId); downloadingPromises.delete(cleanId); })
+  }))), { key: `dl:${cleanId}`, priority }).catch((e) => { playFail = e; }).finally(() => { downloadingSet.delete(cleanId); downloadingPromises.delete(cleanId); })
     // YouTube refused the media of these clients: one more go with a different set before giving up
-    .then(() => (forbidden && target.youtube && clients !== YT_RETRY_CLIENTS
-      ? downloadTrackToDisk(trackUrl, trackId, platform, meta, priority, YT_RETRY_CLIENTS) : undefined));
+    .then(async () => {
+      if (forbidden && target.youtube && clients !== YT_RETRY_CLIENTS) {
+        playFail = null;
+        await downloadTrackToDisk(trackUrl, trackId, platform, meta, priority, YT_RETRY_CLIENTS);
+      }
+      if (priority === 'play' && playFail && !(await findCachedFile(cleanId))) {
+        const err = playFail;
+        if (!err.code) err.code = streamFailCode(err) || 'YT_NO_STREAM';
+        throw err;
+      }
+    });
   downloadingPromises.set(cleanId, job);
   return job;
 }
@@ -2318,6 +2332,22 @@ async function handleSongRadio(req, res, payload) {
 
 // shown to the listener as is: by now every other upload and SoundCloud were tried too
 const STREAM_FAILED = "Couldn't play this song. Try another version from search";
+const STREAM_YT_LOGIN = 'YouTube blocked this stream. Try another search result or play an offline track.';
+const STREAM_NETWORK = "Couldn't reach the stream. Check your connection and try again.";
+function streamFailCode(errOrText) {
+  if (errOrText && typeof errOrText === 'object' && typeof errOrText.code === 'string' && /^[A-Z_]+$/.test(errOrText.code)) return errOrText.code;
+  const m = String((errOrText && errOrText.message) || errOrText || '');
+  const tagged = m.match(/\[([A-Z_]+)\]/);
+  if (tagged) return tagged[1];
+  if (/sign in to confirm|not a bot|LOGIN_REQUIRED|YouTube refused/i.test(m)) return 'YT_LOGIN';
+  if (/fetch failed|network|timed out|ECONN|ENOTFOUND|Failed to fetch/i.test(m)) return 'NETWORK';
+  return '';
+}
+function streamFailMessage(code) {
+  if (code === 'YT_LOGIN') return STREAM_YT_LOGIN;
+  if (code === 'NETWORK') return STREAM_NETWORK;
+  return STREAM_FAILED;
+}
 
 // YouTube refuses some uploads outright ("This video is not available": blocked in the listener's country,
 // taken down, age-gated). The same song is usually up several more times, so before giving up (or falling back
@@ -2426,26 +2456,30 @@ async function handleStreamInfo(req, res, trackUrl, trackId, platform = 'youtube
       const proc = downloadProcs.get(cleanId);
       if (proc) { try { proc.kill(); } catch (e) {} }
     });
-    await downloadTrackToDisk(trackUrl, cleanId, platform, meta, 'play');
+    let playErr = null;
+    try { await downloadTrackToDisk(trackUrl, cleanId, platform, meta, 'play'); } catch (e) { playErr = e; }
     if (gone) { resolveLookup({ success: false, error: 'cancelled' }); if (cacheKey && streamUrlCache.get(cacheKey) === inFlightEntry) streamUrlCache.delete(cacheKey); return; }
     // any song that won't play (SoundCloud and YouTube Music included) tries other YouTube uploads of it
     if (!await findCachedFile(cleanId) && platform !== 'local' && (title || artist)) {
       for (const alt of await alternativeUploads(cleanId, title, artist, duration)) {
         try { logger.log('warn', `stream: ${cleanId} unavailable, trying another upload ${alt}`); } catch (_) {}
-        await downloadTrackToDisk(alt, cleanId, 'youtube', meta, 'play');
+        try { await downloadTrackToDisk(alt, cleanId, 'youtube', meta, 'play'); } catch (e) { playErr = e; }
         if (await findCachedFile(cleanId)) break;
       }
     }
     if (!await findCachedFile(cleanId) && (title || artist)) {
       // same SoundCloud fallback as the streaming path below
       const sc = await soundcloudFallback(title, artist, duration);
-      if (sc) await downloadTrackToDisk(sc, cleanId, 'soundcloud', meta, 'play');
+      if (sc) {
+        try { await downloadTrackToDisk(sc, cleanId, 'soundcloud', meta, 'play'); } catch (e) { playErr = e; }
+      }
     }
     // settle the in-flight entry so concurrent lookups for this track don't wait forever,
     // and drop it so later prefetches don't mistake it for a cached stream URL
+    const failCode = await findCachedFile(cleanId) ? '' : (streamFailCode(playErr) || 'YT_NO_STREAM');
     const outcome = await findCachedFile(cleanId)
       ? { success: true, isLocal: true, streamUrl: withToken(`http://127.0.0.1:${PORT}/api/local-track?id=${encodeURIComponent(cleanId)}`) }
-      : { success: false, error: STREAM_FAILED };
+      : { success: false, error: streamFailMessage(failCode), code: failCode };
     resolveLookup(outcome);
     if (cacheKey && streamUrlCache.get(cacheKey) === inFlightEntry) streamUrlCache.delete(cacheKey);
     res.writeHead(outcome.success ? 200 : 500, { 'Content-Type': 'application/json' });
@@ -2498,7 +2532,8 @@ async function handleStreamInfo(req, res, trackUrl, trackId, platform = 'youtube
 
   if (!streamUrl) {
     try { logger.error('Stream resolve failed: ' + (title || trackUrl)); } catch (_) {}
-    const failure = { success: false, error: STREAM_FAILED };
+    const failCode = 'YT_NO_STREAM';
+    const failure = { success: false, error: streamFailMessage(failCode), code: failCode };
     resolveLookup(failure);
     if (cacheKey && streamUrlCache.get(cacheKey) === inFlightEntry) {
       streamUrlCache.delete(cacheKey);

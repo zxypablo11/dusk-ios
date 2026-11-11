@@ -61,10 +61,7 @@
       route(tab === 'search' ? 'discover' : tab === 'library' ? 'dusk-library' : 'dusk-home');
     });
     const brand = node('div', 'dusk-header-brand');
-    const mark = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    mark.setAttribute('viewBox', '0 0 24 24'); mark.setAttribute('aria-hidden', 'true');
-    mark.innerHTML = '<path d="M4 14a8 8 0 0 1 16 0M3 19h18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>';
-    const heading = node('h1', '', 'Dusk', true); brand.append(mark, heading);
+    const heading = node('h1', '', 'Dusk', true); brand.append(heading);
     header.append(back, brand, button('Settings', 'settings', () => route('settings')));
     document.body.append(header);
     const nav = node('nav', 'dusk-tabbar'); nav.setAttribute('aria-label', I.T('Main navigation')); nav.id = 'dusk-tabbar';
@@ -82,7 +79,7 @@
     const libraryContent = node('div'); library.append(libraryContent);
     main.prepend(home, library);
     const searchHint = node('div', 'dusk-search-hint');
-    searchHint.append(icon('search'), node('h2', '', 'Find your next favorite'), node('p', '', 'Search for songs, artists or albums.'));
+    searchHint.append(node('h2', '', 'Find music'), node('p', '', 'Search for songs, artists or albums.'));
     $('view-discover').prepend(searchHint);
 
     // Retire controls whose desktop layouts have been replaced by this shell.
@@ -120,7 +117,6 @@
       const isRoot = ['dusk-home','dusk-library','discover'].includes(next);
       back.hidden = isRoot;
       header.lastElementChild.hidden = next === 'settings';
-      mark.style.display = next === 'dusk-home' ? '' : 'none';
       const titles = { 'dusk-home': 'Dusk', 'dusk-library': 'Library', discover: 'Search', settings: 'Settings', favorites: 'Liked songs', local: 'Downloads & files', albums: 'Albums', artists: 'Artists', history: 'Recently played', 'playlist-detail': 'Playlist', album: 'Album', artist: 'Artist' };
       I.text(heading, titles[next] || 'Dusk');
       nav.querySelectorAll('button').forEach(b => b.setAttribute('aria-current', b.dataset.tab === tab ? 'page' : 'false'));
@@ -150,6 +146,12 @@
       const more = button('Track options', 'more', () => core.trackMenu(track, more));
       row.append(start, more); return row;
     }
+    function trackTile(track, tracks, index) {
+      const b = button('Play', null, () => play(track, tracks, index), 'dusk-rail-tile');
+      b.setAttribute('aria-label', I.Tf('Play {0}', track.title || ''));
+      b.replaceChildren(cover(track, 'dusk-cover dusk-rail-cover'), node('strong', '', track.title || I.T('Untitled'), true), node('small', '', track.artist || '', true));
+      return b;
+    }
     function section(title, action) {
       const sec = node('section', 'dusk-section');
       const head = node('div', 'dusk-section-head'); head.append(node('h2', '', title));
@@ -158,7 +160,7 @@
     }
     function empty(title, detail, label, action) {
       const box = node('div', 'dusk-empty');
-      box.append(icon('note'), node('h2', '', title), node('p', '', detail));
+      box.append(node('h2', '', title), node('p', '', detail));
       if (action) box.append(button(label, null, action, 'dusk-primary-button'));
       return box;
     }
@@ -184,10 +186,20 @@
         const tracks = homeFilter === 'new' ? data.trending : data.wave.length ? data.wave : data.trending;
         if (tracks.length) {
           const hero = node('article', 'dusk-hero');
-          hero.append(cover(tracks[0], 'dusk-hero-cover'));
+          const art = cover(tracks[0], 'dusk-hero-cover');
           const caption = node('div', 'dusk-hero-caption');
-          const text = node('div'); text.append(node('small', 'dusk-eyebrow', homeFilter === 'new' ? 'Trending now' : 'Made for your day'), node('h2', '', tracks[0].title || I.T('Untitled'), true), node('p', '', tracks[0].artist || '', true));
-          caption.append(text, button('Play recommendations', 'play', () => play(tracks[0], tracks, 0))); hero.append(caption); homeContent.append(hero);
+          const text = node('div');
+          text.append(node('h2', '', tracks[0].title || I.T('Untitled'), true), node('p', '', tracks[0].artist || '', true));
+          caption.append(text, button('Play recommendations', 'play', () => play(tracks[0], tracks, 0)));
+          art.append(caption);
+          hero.append(art);
+          homeContent.append(hero);
+          if (homeFilter === 'for-you' && tracks.length > 1) {
+            const sec = section('Listen next');
+            const rail = node('div', 'dusk-rail');
+            tracks.slice(1, 12).forEach((track, i) => rail.append(trackTile(track, tracks, i + 1)));
+            sec.append(rail);
+          }
           if (homeFilter === 'new') { const sec = section('Trending now'); tracks.slice(1, 16).forEach((track,i) => sec.append(trackRow(track, tracks, i + 1))); }
         } else {
           homeContent.append(empty(data.loading ? 'Finding music for you' : 'Ready when you are', navigator.onLine === false ? 'You are offline. Your downloaded music is in your library.' : data.error ? 'Recommendations could not be loaded. Search for music or try again.' : 'Search for a song to start your collection.', data.loading ? 'Search music' : data.error ? 'Try again' : 'Search music', () => data.error && !data.loading ? core.refreshHome() : route('discover')));
@@ -195,8 +207,11 @@
       }
       if (homeFilter === 'for-you' && recent) {
         const sec = section('Recently played', () => route('history'));
-        if (data.recent.length) data.recent.slice(0, 4).forEach((track,i) => sec.append(trackRow(track, data.recent, i)));
-        else sec.append(node('p', 'dusk-muted', 'The songs you play will appear here.'));
+        if (data.recent.length) {
+          const rail = node('div', 'dusk-rail');
+          data.recent.slice(0, 10).forEach((track, i) => rail.append(trackTile(track, data.recent, i)));
+          sec.append(rail);
+        } else sec.append(node('p', 'dusk-muted', 'The songs you play will appear here.'));
       }
       if (homeFilter === 'for-you' && artists && data.artists.length) {
         const sec = section('Your artists', () => route('artists'));
@@ -236,15 +251,29 @@
     playbackStatus.setAttribute('role', 'status');
     $('right-panel-artwork-box').append(offline, playbackStatus);
     let attemptedLoad = false;
+    let streamFail = null;
+    function streamFailMessage(code) {
+      if (code === 'YT_LOGIN') return 'YouTube blocked this stream. Try another search result or play an offline track.';
+      if (code === 'NETWORK') return "Couldn't reach the stream. Check your connection and try again.";
+      return 'This source could not play the song. Try another result from search.';
+    }
     function playbackState() {
       if (core.state.trackLoading) {
         attemptedLoad = true;
+        streamFail = null;
         I.text(playbackStatus, 'Loading audio…');
+      } else if (streamFail) {
+        I.text(playbackStatus, streamFailMessage(streamFail));
       } else if (attemptedLoad && core.audio.readyState === 0) {
-        I.text(playbackStatus, 'This source could not play the song. Try another result from search.');
+        I.text(playbackStatus, streamFailMessage(''));
       } else playbackStatus.textContent = '';
     }
     window.addEventListener('muriel:loading', playbackState);
+    window.addEventListener('muriel:stream-error', (e) => {
+      streamFail = (e.detail && e.detail.code) || 'YT_NO_STREAM';
+      attemptedLoad = true;
+      playbackState();
+    });
     const seek = node('input', 'dusk-seek'); seek.type = 'range'; seek.min = '0'; seek.max = '0'; seek.step = '0.1'; seek.value = '0'; seek.disabled = true;
     seek.setAttribute('aria-label', I.T('Playback position')); seek.dataset.label = 'Playback position';
     $('scrubber-track').after(seek);

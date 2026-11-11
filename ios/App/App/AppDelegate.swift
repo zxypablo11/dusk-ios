@@ -78,6 +78,7 @@ class MurielBridgeViewController: CAPBridgeViewController {
     override open func capacitorDidLoad() {
         bridge?.registerPluginInstance(MurielLiveActivityPlugin())
         bridge?.registerPluginInstance(MurielAudioSessionPlugin())
+        bridge?.registerPluginInstance(DuskLibraryVaultPlugin())
     }
 }
 

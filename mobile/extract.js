@@ -5,6 +5,28 @@ const { Innertube, Platform, Constants } = require('youtubei.js/web');
 
 const DESKTOP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
 
+// Stable codes for the player UI (dusk-mobile / toasts). Message stays human-readable in logs.
+function streamError(code, message) {
+  const err = new Error(message || code);
+  err.code = code;
+  return err;
+}
+function classifyYtPlayability(status, reason) {
+  const s = String(status || '');
+  const r = String(reason || '');
+  if (s === 'LOGIN_REQUIRED' || /sign in to confirm|not a bot|login_required/i.test(r)) return 'YT_LOGIN';
+  if (/unavailable|private|removed|copyright/i.test(r)) return 'YT_NO_STREAM';
+  return 'YT_NO_STREAM';
+}
+function classifyThrown(err) {
+  if (!err) return 'YT_NO_STREAM';
+  if (err.code && typeof err.code === 'string' && /^[A-Z_]+$/.test(err.code)) return err.code;
+  const m = String(err.message || err);
+  if (/sign in to confirm|not a bot|LOGIN_REQUIRED|YouTube refused/i.test(m)) return 'YT_LOGIN';
+  if (/fetch failed|network|timed out|ECONN|ENOTFOUND|Failed to fetch/i.test(m)) return 'NETWORK';
+  return 'YT_NO_STREAM';
+}
+
 // youtubei.js needs a JS evaluator for signature deciphering (only used when a client returns ciphered URLs)
 Platform.shim.eval = async (data, env) => {
   const props = [];
@@ -71,10 +93,14 @@ const VISITOR_REFRESH_MS = 10 * 60 * 1000;
 const visitorIsFresh = () => !!visitorId && Date.now() - visitorAt < VISITOR_REFRESH_MS;
 async function getVisitorId(force) {
   if (visitorId && (!force || visitorIsFresh())) return visitorId;
-  const html = await (await globalThis.__murielFetch('https://www.youtube.com/', { headers: { 'User-Agent': VOS_UA, 'Accept-Language': 'en-US' } })).text();
-  visitorId = (html.match(/"VISITOR_DATA":"([^"]+)"/) || [])[1] || null;
-  visitorAt = Date.now();
-  return visitorId;
+  try {
+    const html = await (await globalThis.__murielFetch('https://www.youtube.com/', { headers: { 'User-Agent': VOS_UA, 'Accept-Language': 'en-US' } })).text();
+    visitorId = (html.match(/"VISITOR_DATA":"([^"]+)"/) || [])[1] || null;
+    visitorAt = Date.now();
+    return visitorId;
+  } catch (e) {
+    throw streamError('NETWORK', e && e.message ? e.message : 'network error contacting YouTube');
+  }
 }
 
 async function youtubeHlsAudio(id) {
@@ -86,17 +112,24 @@ async function youtubeHlsAudio(id) {
     };
     const headers = { 'User-Agent': VOS_UA, 'Content-Type': 'application/json', 'X-Youtube-Client-Name': '101', 'X-Youtube-Client-Version': '1.02', Origin: 'https://www.youtube.com' };
     if (visitor) headers['X-Goog-Visitor-Id'] = visitor;
-    const j = await (await globalThis.__murielFetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', { method: 'POST', headers, body: JSON.stringify(body) })).json();
+    let j;
+    try {
+      j = await (await globalThis.__murielFetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', { method: 'POST', headers, body: JSON.stringify(body) })).json();
+    } catch (e) {
+      throw streamError('NETWORK', e && e.message ? e.message : 'network error resolving stream');
+    }
     const master = j.streamingData && j.streamingData.hlsManifestUrl;
     if (!master) {
+      const status = j.playabilityStatus && j.playabilityStatus.status;
+      const reason = (j.playabilityStatus && j.playabilityStatus.reason) || 'no HLS stream';
       // stale visitor id: try once with a new one, unless the current one is new already (then a refresh won't help)
-      if (j.playabilityStatus && j.playabilityStatus.status === 'LOGIN_REQUIRED' && !force && !visitorIsFresh()) continue;
-      throw new Error((j.playabilityStatus && j.playabilityStatus.reason) || 'no HLS stream');
+      if (status === 'LOGIN_REQUIRED' && !force && !visitorIsFresh()) continue;
+      throw streamError(classifyYtPlayability(status, reason), reason);
     }
     const m3u = await (await globalThis.__murielFetch(master, { headers: { 'User-Agent': VOS_UA } })).text();
     const pick = (itag) => (m3u.match(new RegExp(`#EXT-X-MEDIA:[^\\n]*URI="([^"]+/itag/${itag}/[^"]*)"`)) || [])[1];
     const playlist = pick(234) || pick(233);
-    if (!playlist) throw new Error('no audio rendition');
+    if (!playlist) throw streamError('YT_NO_STREAM', 'no audio rendition');
     const d = j.videoDetails || {};
     // The same answer lists the full-quality Opus file (itag 251, ~130-160 kbps) as a plain link. For this
     // client it downloads without a proof-of-origin token (yt-dlp has no GVS token policy for visionos).
@@ -105,12 +138,17 @@ async function youtubeHlsAudio(id) {
     const opus = f251 ? { url: f251.url, size: Number(f251.contentLength) } : null;
     return { kind: 'hls', url: playlist, headers: { 'User-Agent': VOS_UA }, ext: 'aac', opus, artist: (d.author || '').replace(/\s*-\s*Topic$/i, ''), title: d.title, duration: Number(d.lengthSeconds) || 0 };
   }
-  throw new Error('YouTube refused the request');
+  throw streamError('YT_LOGIN', 'YouTube refused the request');
 }
 
 // Fallback: direct m4a (itag 140). Works for videos YouTube doesn't gate yet.
 async function youtubeAudio(id) {
-  try { return await youtubeHlsAudio(id); } catch (e) { console.warn('[muriel] HLS route failed, trying direct', e.message); }
+  let hlsErr = null;
+  try { return await youtubeHlsAudio(id); } catch (e) {
+    hlsErr = e;
+    console.warn('[muriel] HLS route failed, trying direct', e.message);
+    if (e && e.code === 'NETWORK') throw e;
+  }
   const y = await yt();
   let lastErr = null;
   for (const client of ['IOS', 'MWEB', 'TV']) {
@@ -118,14 +156,16 @@ async function youtubeAudio(id) {
       const info = await y.getBasicInfo(id, { client });
       const formats = (info.streaming_data && info.streaming_data.adaptive_formats || []).filter((f) => f.has_audio && !f.has_video);
       const pick = formats.filter((f) => /mp4/.test(f.mime_type)).sort((a, b) => b.bitrate - a.bitrate)[0] || formats.sort((a, b) => b.bitrate - a.bitrate)[0];
-      if (!pick) throw new Error('no audio format');
+      if (!pick) throw streamError('YT_NO_STREAM', 'no audio format');
       const url = pick.url || await pick.decipher(y.session.player);
       // googlevideo ties the URL to the client that asked for it; download with the same User-Agent
       const ua = (Constants.CLIENTS[client] && Constants.CLIENTS[client].USER_AGENT) || 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148';
       return { url, headers: { 'User-Agent': ua }, ext: /mp4/.test(pick.mime_type) ? 'm4a' : 'webm', artist: text(info.basic_info.author).replace(/\s*-\s*Topic$/i, ''), title: info.basic_info.title, duration: info.basic_info.duration };
     } catch (e) { lastErr = e; }
   }
-  throw lastErr || new Error('could not extract audio stream');
+  const err = lastErr || hlsErr || streamError('YT_NO_STREAM', 'could not extract audio stream');
+  if (!err.code) err.code = classifyThrown(err);
+  throw err;
 }
 
 // ---- SoundCloud (public api-v2 with the web client's client_id) ----
@@ -315,4 +355,4 @@ async function playlist(pageUrl, limit = 500) {
   throw new Error(`unsupported link ${s}`);
 }
 
-module.exports = { youtubeSearch, ytMusicSearch, soundcloudSearch, resolveAudio, playlist, scCandidates, scCanonicalUrl, isPlayable };
+module.exports = { youtubeSearch, ytMusicSearch, soundcloudSearch, resolveAudio, playlist, scCandidates, scCanonicalUrl, isPlayable, streamError, classifyThrown, classifyYtPlayability };

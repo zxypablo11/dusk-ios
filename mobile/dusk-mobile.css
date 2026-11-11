@@ -19,7 +19,7 @@ html.dusk-mobile .app-layout {
   top: calc(var(--safe-top) + 52px) !important;
   bottom: calc(var(--safe-bottom) + 54px) !important;
 }
-html.dusk-mobile body.dusk-has-track .app-layout { bottom: calc(var(--safe-bottom) + 118px) !important; }
+html.dusk-mobile body.dusk-has-track .app-layout { bottom: calc(var(--safe-bottom) + 110px) !important; }
 html.dusk-mobile body[data-dusk-view="settings"] .app-layout { top: calc(var(--safe-top) + 52px) !important; }
 html.dusk-mobile .main-content { padding: 2px var(--dusk-pad) 28px !important; }
 
@@ -441,18 +441,32 @@ html.dusk-mobile .top-nav .platform-btn { min-width: 44px !important; min-height
 .dusk-search-hint p { margin: 0; font-size: calc(14px * var(--dusk-scale)); line-height: 1.5; }
 .dusk-search-hint[hidden] { display: none; }
 
+/* Miniplayer = full-bleed instrument strip on the tabbar — not a floating SaaS toast. */
 html.dusk-mobile body:not(.dusk-has-track):not(.np-open) #playbar { display: none !important; }
 html.dusk-mobile body:not(.np-open) #playbar {
-  left: 12px !important;
-  right: 12px !important;
-  bottom: calc(58px + var(--safe-bottom)) !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: calc(54px + var(--safe-bottom)) !important;
   height: 56px !important;
-  padding: 0 6px 0 0 !important;
+  padding: 0 4px 0 0 !important;
   border: 0 !important;
-  border-radius: 10px !important;
-  background: var(--dusk-lift) !important;
+  border-radius: 0 !important;
+  background: var(--dusk-bg) !important;
   box-shadow: none !important;
   overflow: hidden !important;
+}
+html.dusk-mobile body:not(.np-open) #playbar::after {
+  left: 0 !important;
+  right: 0 !important;
+  bottom: auto !important;
+  top: 0 !important;
+  height: 1.5px !important;
+  border-radius: 0 !important;
+  background: linear-gradient(
+    90deg,
+    var(--dusk-ink) calc(var(--mini-progress, 0) * 100%),
+    color-mix(in srgb, var(--dusk-ink) 14%, transparent) 0
+  ) !important;
 }
 html.dusk-mobile body:not(.np-open) .btn-play-pause { background: transparent !important; color: var(--dusk-ink) !important; }
 html.dusk-mobile body:not(.np-open) #playbar .playback-controls { gap: 0 !important; }

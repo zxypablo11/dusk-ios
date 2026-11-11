@@ -123,6 +123,14 @@ html.dusk-mobile .platform-switch-container { display: none !important; }
   justify-content: space-around;
   background: var(--dusk-bg);
 }
+/* dusk.css parks chrome as position:relative for FX layering — keep phone chrome fixed. */
+html.dusk-mobile.dusk-active :is(.dusk-header, .dusk-tabbar),
+html.dusk-mobile.dusk-active body:not(.np-open) #playbar {
+  position: fixed !important;
+}
+html.dusk-mobile.dusk-active .dusk-header { z-index: 3300 !important; }
+html.dusk-mobile.dusk-active .dusk-tabbar { z-index: 3200 !important; bottom: 0 !important; left: 0 !important; right: 0 !important; }
+html.dusk-mobile.dusk-active body:not(.np-open) #playbar { z-index: 3100 !important; }
 .dusk-tab {
   border: 0;
   background: transparent;

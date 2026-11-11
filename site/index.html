@@ -1,108 +1,155 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Dusk — music for after the light</title>
-  <meta name="description" content="Dusk is a free iPhone music player. YouTube, YouTube Music and SoundCloud — no ads, no account. Sideload the IPA.">
-  <meta name="theme-color" content="#070708">
+  <title>Dusk</title>
+  <meta name="description" content="Dusk — kostenloser iPhone-Musikplayer. YouTube, YouTube Music, SoundCloud. Ohne Werbung, ohne Konto.">
+  <meta name="theme-color" content="#050506">
   <meta name="color-scheme" content="dark">
-  <meta property="og:title" content="Dusk — music for after the light">
-  <meta property="og:description" content="Free iPhone music player. Quiet night UI. YouTube, YouTube Music, SoundCloud.">
-  <meta property="og:image" content="shots/home.jpg">
+  <meta property="og:title" content="Dusk">
+  <meta property="og:description" content="Musik für die Stunde danach. Kostenloser iPhone-Player.">
+  <meta property="og:image" content="shots/dusk-horizon.jpg">
   <link rel="icon" href="dusk-icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="dusk-icon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="dusk.css">
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
+  <a class="skip" href="#main">Zum Inhalt</a>
 
-  <nav class="nav" aria-label="Dusk">
-    <a class="nav-brand" href="#top">
-      <svg viewBox="0 0 128 128" aria-hidden="true"><rect width="128" height="128" rx="28" fill="#131416"/><path d="M32 67a32 32 0 0 1 64 0M32 88h64" fill="none" stroke="#f5f5f7" stroke-width="8" stroke-linecap="round"/></svg>
-      <span>Dusk</span>
+  <header class="top" id="top">
+    <a class="mark" href="#top" aria-label="Dusk">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <b>Dusk</b>
     </a>
-    <a class="nav-get" href="#get">Get IPA</a>
-  </nav>
+    <a class="top-cta" href="#holen">IPA holen</a>
+  </header>
 
   <main id="main">
-    <header class="hero" id="top">
-      <div class="hero-media" aria-hidden="true">
-        <img src="shots/home.webp" alt="" width="1179" height="2556" fetchpriority="high">
+    <!-- One composition: brand + night + one line + CTA. Product phone is the edge-to-edge visual plane. -->
+    <section class="hero">
+      <div class="hero-sky" aria-hidden="true">
+        <img src="shots/dusk-horizon.jpg" alt="" width="1376" height="768" fetchpriority="high">
       </div>
-      <div class="hero-copy">
-        <p class="hero-brand">Dusk</p>
-        <h1>Music for after the light.</h1>
-        <p class="hero-lede">A free iPhone player. YouTube, YouTube Music and SoundCloud — no ads, no account.</p>
-        <div class="hero-ctas">
-          <a class="btn" href="#get">Get the IPA</a>
-          <a class="btn-ghost" href="https://github.com/zxypablo11/dusk-ios">GitHub</a>
+      <div class="hero-stage">
+        <div class="hero-copy">
+          <p class="name">Dusk</p>
+          <h1>Musik für die Stunde danach.</h1>
+          <p class="lede">Kostenloser iPhone-Player. YouTube, YouTube Music, SoundCloud — ohne Werbung, ohne Konto.</p>
+          <div class="actions">
+            <a class="go" href="#holen">IPA holen</a>
+            <a class="quiet" href="https://github.com/zxypablo11/dusk-ios">Quellcode</a>
+          </div>
         </div>
-      </div>
-    </header>
-
-    <section class="band" aria-labelledby="play-h">
-      <div class="band-in">
-        <div class="band-copy reveal">
-          <h2 id="play-h">The cover owns the night.</h2>
-          <p>Full-screen artwork, a quiet transport, lyrics and queue when you want them — nothing else competing for attention.</p>
-        </div>
-        <figure class="band-shot reveal">
-          <img src="shots/player.webp" alt="Dusk now playing screen with large album art" width="1179" height="2556" loading="lazy">
-        </figure>
+        <aside class="device" aria-hidden="true">
+          <div class="phone">
+            <div class="phone-glass">
+              <div class="mock">
+                <div class="mock-bar">
+                  <span>Dusk</span>
+                  <i></i>
+                </div>
+                <div class="mock-filters">
+                  <b>Für dich</b>
+                  <span>Neu</span>
+                  <span>Mixes</span>
+                </div>
+                <div class="mock-hero">
+                  <img src="shots/dusk-cover.jpg" alt="">
+                  <div class="mock-cap">
+                    <div>
+                      <strong>After Hours</strong>
+                      <em>Night Drive</em>
+                    </div>
+                    <button type="button" tabindex="-1" aria-hidden="true"></button>
+                  </div>
+                </div>
+                <div class="mock-rail">
+                  <span>Als Nächstes</span>
+                  <div class="mock-tiles">
+                    <i style="background-image:url(shots/dusk-cover.jpg)"></i>
+                    <i></i>
+                    <i></i>
+                  </div>
+                </div>
+                <div class="mock-mini">
+                  <i style="background-image:url(shots/dusk-cover.jpg)"></i>
+                  <div>
+                    <strong>After Hours</strong>
+                    <em>Night Drive</em>
+                  </div>
+                  <b></b>
+                </div>
+                <nav class="mock-tabs">
+                  <span class="on">Entdecken</span>
+                  <span>Sammlung</span>
+                  <span>Suche</span>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section class="band" aria-labelledby="find-h">
-      <div class="band-in reverse">
-        <div class="band-copy reveal">
-          <h2 id="find-h">Search without picking a source.</h2>
-          <p>Type a song. Dusk chooses YouTube Music, YouTube or SoundCloud for you and keeps the chrome out of the way.</p>
+    <section class="strip" aria-label="Was Dusk ist">
+      <p>Cover zuerst. Chrome danach. Eine Quelle wird gewählt — du tippst nur den Song.</p>
+    </section>
+
+    <section class="panel" id="player">
+      <div class="panel-copy">
+        <h2>Now Playing ohne Ablenkung.</h2>
+        <p>Großes Cover, klare Transport-Leiste, Lyrics und Warteschlange unten. Kein Dashboard, kein Glow.</p>
+      </div>
+      <div class="panel-device" aria-hidden="true">
+        <div class="phone slim">
+          <div class="phone-glass">
+            <div class="mock np">
+              <div class="np-head">
+                <span></span>
+                <b></b>
+              </div>
+              <div class="np-art">
+                <img src="shots/dusk-cover.jpg" alt="">
+              </div>
+              <div class="np-meta">
+                <strong>After Hours</strong>
+                <em>Night Drive</em>
+              </div>
+              <div class="np-seek"><i></i></div>
+              <div class="np-transport">
+                <span></span><span class="big"></span><span></span>
+              </div>
+              <div class="np-foot">
+                <b class="on">Player</b>
+                <b>Lyrics</b>
+                <b>Queue</b>
+              </div>
+            </div>
+          </div>
         </div>
-        <figure class="band-shot reveal">
-          <img src="shots/search.webp" alt="Dusk search screen" width="1179" height="2556" loading="lazy">
-        </figure>
       </div>
     </section>
 
-    <section class="band" aria-labelledby="home-h">
-      <div class="band-in stack">
-        <div class="band-copy reveal">
-          <h2 id="home-h">Home that starts with a song.</h2>
-          <p>Recommendations, mixes and what you played last — led by cover art, not a dashboard of cards.</p>
-        </div>
-        <figure class="band-shot wide reveal">
-          <img src="shots/foryou.webp" alt="Dusk home recommendations" width="1179" height="2556" loading="lazy">
-        </figure>
-      </div>
-    </section>
-
-    <section class="get" id="get" aria-labelledby="get-h">
-      <div class="get-in reveal">
-        <h2 id="get-h">Sideload it.</h2>
-        <p>Dusk ships as an unsigned IPA from GitHub Actions. On Windows, Sideloadly is the simple path.</p>
-        <ol class="get-steps">
-          <li><span>1</span><span><strong>Build</strong> — open Actions → Dusk iPhone test build → Run workflow, then download the <em>Dusk-iPhone</em> artifact.</span></li>
-          <li><span>2</span><span><strong>Install</strong> — open the IPA in <a href="https://sideloadly.io/">Sideloadly</a> with your Apple ID and a USB-connected iPhone.</span></li>
-          <li><span>3</span><span><strong>Trust</strong> — on the phone: Settings → General → VPN &amp; Device Management → trust the developer.</span></li>
-        </ol>
-        <div class="get-actions">
-          <a class="btn" id="ipa-link" href="https://github.com/zxypablo11/dusk-ios/actions/workflows/dusk-ios.yml">Open IPA workflow</a>
-          <a class="btn-ghost" href="https://sideloadly.io/">Sideloadly</a>
-          <a class="btn-ghost" href="https://github.com/zxypablo11/dusk-ios">Source</a>
-        </div>
+    <section class="get" id="holen">
+      <h2>Aufs iPhone.</h2>
+      <ol>
+        <li><strong>Bauen</strong> — GitHub Actions → Dusk iPhone test build → Artefakt <em>Dusk-iPhone</em>.</li>
+        <li><strong>Signieren</strong> — IPA in <a href="https://sideloadly.io/">Sideloadly</a> mit Apple-ID und USB-iPhone.</li>
+        <li><strong>Vertrauen</strong> — Einstellungen → Allgemein → VPN &amp; Geräteverwaltung.</li>
+      </ol>
+      <div class="actions">
+        <a class="go" id="ipa-link" href="https://github.com/zxypablo11/dusk-ios/actions/workflows/dusk-ios.yml">Zum IPA-Build</a>
+        <a class="quiet" href="https://sideloadly.io/">Sideloadly</a>
       </div>
     </section>
   </main>
 
   <footer class="foot">
-    <div class="foot-in">
-      <p>Dusk · based on <a href="https://github.com/cloverscripts/riff-muriel">Muriel</a> (MIT). Not affiliated with YouTube, Google, SoundCloud or Spotify.</p>
-      <p><a href="https://github.com/zxypablo11/dusk-ios">zxypablo11/dusk-ios</a></p>
-    </div>
+    <p><b>Dusk</b> · Open Source · MIT</p>
+    <p><a href="https://github.com/zxypablo11/dusk-ios">github.com/zxypablo11/dusk-ios</a></p>
   </footer>
 
   <script src="dusk.js" defer></script>

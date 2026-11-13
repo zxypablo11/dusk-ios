@@ -169,6 +169,10 @@
         target.dataset.duskPlayback = phase;
         if (phase === 'idle') { target.removeAttribute('aria-current'); target.removeAttribute('aria-busy'); }
         else { target.setAttribute('aria-current', 'true'); target.setAttribute('aria-busy', String(phase === 'loading')); }
+        if (target.hasAttribute('data-dusk-resume')) {
+          const title = target.querySelector('.dusk-resume-meta strong')?.textContent || '';
+          target.setAttribute('aria-label', I.Tf(phase === 'playing' ? 'Pause {0}' : phase === 'loading' ? 'Loading {0}…' : 'Play {0}', title));
+        }
         let marker = target.querySelector('.dusk-track-indicator');
         if (!marker && phase !== 'idle') {
           const title = target.querySelector('.dusk-song-meta strong, .dusk-resume-meta strong, .track-row-title, .dusk-hero-caption h2, :scope > strong');
@@ -234,8 +238,9 @@
         const meta = node('span', 'dusk-resume-meta');
         meta.append(node('strong', '', track.title || I.T('Untitled'), true), node('small', '', track.artist || '', true));
         resume.replaceChildren(cover(track), meta); resume.setAttribute('aria-label', I.Tf('Play {0}', track.title || ''));
+        resume.setAttribute('data-dusk-resume', '');
         grid.append(markTrack(resume, track));
-        const playlist = [...core.state.playlists].reverse().find(item => item.tracks?.length);
+        const playlist = ui.mostRecentPlaylist(core.state.playlists);
         if (playlist) {
           const open = button('Playlist', null, () => core.openPlaylist(playlist.id), 'dusk-resume');
           const info = node('span', 'dusk-resume-meta');
@@ -301,18 +306,22 @@
       if (!homeContent.children.length) homeContent.append(empty('Make yourself at home', 'Choose what appears here in the theme editor.', 'Settings', () => route('settings')));
       syncPlaybackFeedback();
     }
-    function renderSearchHistory() {
+    function renderSearchHistory(focusQuery) {
       searchHint.replaceChildren();
       const queries = history.queries(), artists = history.artists();
       if (queries.length) {
         const head = node('div', 'dusk-section-head');
-        head.append(node('h2', '', 'Recent searches'), button('Clear searches', null, () => { history.clearQueries(); renderSearchHistory(); }, 'dusk-text-button'));
+        head.append(node('h2', '', 'Recent searches'), button('Clear searches', null, () => { core.dismissSearch(); history.clearQueries(); renderSearchHistory(''); }, 'dusk-text-button'));
         searchHint.append(head);
         for (const query of queries) {
           const row = node('div', 'dusk-search-history-row');
           const run = button('Search', 'history', () => core.search(query), 'dusk-search-history-query');
+          run.dataset.historyQuery = query;
           run.replaceChildren(icon('history'), node('span', '', query, true)); run.setAttribute('aria-label', I.Tf('Search for {0}', query));
-          const remove = button('Remove search', 'close', () => { history.removeQuery(query); renderSearchHistory(); });
+          const remove = button('Remove search', 'close', () => {
+            const index = queries.indexOf(query), next = queries[index + 1] || queries[index - 1] || '';
+            history.removeQuery(query); renderSearchHistory(next);
+          });
           remove.setAttribute('aria-label', I.Tf('Remove search for {0}', query));
           row.append(run, remove); searchHint.append(row);
         }
@@ -328,6 +337,10 @@
       }
       if (!queries.length && !artists.length) searchHint.append(node('h2', '', 'Find music'), node('p', '', 'Search for songs, artists or albums.'));
       updateSearchHint();
+      if (focusQuery !== undefined) {
+        const next = [...searchHint.querySelectorAll('[data-history-query]')].find(el => el.dataset.historyQuery === focusQuery);
+        (next || $('search-input'))?.focus();
+      }
     }
     function renderLibrary() {
       libraryContent.replaceChildren();

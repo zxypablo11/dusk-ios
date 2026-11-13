@@ -52,7 +52,24 @@
     if (!key || key !== currentKey) return 'idle';
     return loading ? 'loading' : paused ? 'paused' : 'playing';
   }
-  const api = { createHistory, playbackPhase };
+  function mostRecentPlaylist(playlists) {
+    let latest = null, latestTime = -1;
+    for (const playlist of Array.isArray(playlists) ? playlists : []) {
+      if (!playlist || !Array.isArray(playlist.tracks) || !playlist.tracks.length) continue;
+      // Existing IDs encode creation time: decimal in the mobile API, or
+      // eight base-36 timestamp characters followed by a five-character nonce.
+      const id = String(playlist.id || ''), encoded = id.startsWith('pl_') ? id.slice(3) : '';
+      const created = /^\d{13}$/.test(encoded) ? Number(encoded)
+        : /^[a-z0-9]{13}$/.test(encoded) ? parseInt(encoded.slice(0, -5), 36) : 0;
+      const times = [created, playlist.createdAt, playlist.updatedAt, ...playlist.tracks.map(track => track?.addedAt)];
+      const time = Math.max(0, ...times.map(value => typeof value === 'number' && Number.isFinite(value) ? value : 0));
+      if (time > latestTime || (time === latestTime && id > String(latest?.id || ''))) {
+        latest = playlist; latestTime = time;
+      }
+    }
+    return latest;
+  }
+  const api = { createHistory, playbackPhase, mostRecentPlaylist };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.DuskUiCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

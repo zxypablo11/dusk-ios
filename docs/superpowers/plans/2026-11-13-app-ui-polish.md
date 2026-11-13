@@ -39,15 +39,21 @@ Files: edit `mobile/dusk-mobile.js`, `mobile/dusk-mobile.css`, `locales/de-revie
 - [x] Add compact continuation, translations, secondary ink and functional marker styles.
 - [x] Build the locale/web bundle and inspect actual UI at mobile sizes, including greyscale hierarchy and keyboard access.
 - [x] Run full Node suite and inspect task-only diff.
-- [ ] Obtain one independent review.
+- [x] Obtain one independent review.
 - [ ] Commit/push task changes, build/download/inspect a new unsigned iPhone IPA and report remaining physical-device checks.
 
 ## Execution evidence
 
-- Core history and playback tests: 9/9; related UI, locale, preferences, streaming and background-audio checks: 49/49.
-- Full Node suite: 344 tests, 338 passed, 4 failed, 2 skipped. The failures reproduce the baseline: trending library endpoint and three shell-dependent play-retry tests on Windows.
+- Core history and UI integration tests: 21/21; related UI, locale, preferences, streaming and background-audio checks: 61/61.
+- Final full Node suite: 356 tests, 350 passed, 4 failed, 2 skipped. The failures reproduce the baseline: trending library endpoint and three shell-dependent play-retry tests on Windows.
 - Locale generation, JavaScript syntax checks and `node mobile/build.mjs` succeeded. The iPhone workflow also runs the UI/history, preferences and locale tests before building.
 - Actual browser UI at 375×812, 390×844 and 844×390: successful artist/search history, rerun/remove/clear, reload persistence, rapid song selection, playing/paused/loading states and a playlist continuation entry. Keyboard Tab exposes a visible focus outline and Enter removes a query.
 - Long titles keep the 14 px marker outside the truncated title. Colour and greyscale screenshots preserve the hierarchy of title, section and secondary text.
 - Ruling: set the existing hero cover to full width after landscape testing exposed aspect-ratio shrinkage. This keeps the established artwork layout; the change is CSS only and was visually verified after rebuilding.
 - User-file SHA256 snapshot remains unchanged. Preview music and playlist data are local browser test data. Physical iPhone interaction still requires a device check.
+
+## Independent review and fixes
+
+One read-only review of `4c931be..82f4964` found no critical issues and one important issue: a dismissed pending search could enter persistent history. It also found focus loss after history deletion, playlist recency following manual array order and a resume action announcing Play while it would pause.
+
+All four were treated as functional issues and fixed in one pass. Twelve integration regressions exercise actual production search handlers, renderers and callbacks, with observed failures before the relevant fixes. Dismissal invalidates the request token and scheduled rendering; deletion restores adjacent-query/input focus; continuation labels follow the playback action; playlist choice uses save/creation metadata and legacy ID timestamps, independent of manual order. User edits update playlist save time; automatic artwork repair and library reordering do not. No re-review or deferred minor findings.

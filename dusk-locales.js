@@ -1172,6 +1172,7 @@
   "Loading {0}…": "{0} wird geladen …",
   "Playing {0}": "{0} läuft",
   "Paused {0}": "{0} pausiert",
+  "Pause {0}": "{0} pausieren",
   "favorite": "Favorisieren",
   "add to playlist": "Zur Playlist hinzufügen",
   "download & options": "Download und Optionen"

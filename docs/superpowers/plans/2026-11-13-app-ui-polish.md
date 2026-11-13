@@ -40,7 +40,7 @@ Files: edit `mobile/dusk-mobile.js`, `mobile/dusk-mobile.css`, `locales/de-revie
 - [x] Build the locale/web bundle and inspect actual UI at mobile sizes, including greyscale hierarchy and keyboard access.
 - [x] Run full Node suite and inspect task-only diff.
 - [x] Obtain one independent review.
-- [ ] Commit/push task changes, build/download/inspect a new unsigned iPhone IPA and report remaining physical-device checks.
+- [x] Commit/push task changes, build/download/inspect a new unsigned iPhone IPA and report remaining physical-device checks.
 
 ## Execution evidence
 
@@ -59,3 +59,13 @@ One read-only review of `4c931be..82f4964` found no critical issues and one impo
 All four were treated as functional issues and fixed in one pass. Twelve integration regressions exercise actual production search handlers, renderers and callbacks, with observed failures before the relevant fixes. Dismissal invalidates the request token and scheduled rendering; deletion restores adjacent-query/input focus; continuation labels follow the playback action; playlist choice uses save/creation metadata and legacy ID timestamps, independent of manual order. User edits update playlist save time; automatic artwork repair and library reordering do not. No re-review or deferred minor findings.
 
 Build routing: the corrected ARM Mac run remained queued for several minutes. Use the official `macos-15-intel` runner from actions/runner-images; it runs the same native/UI tests and cross-compiles the same iPhone target.
+
+## Delivered iPhone build
+
+- Source: `6c3b58fbf9192587901585de3b5fe2e2a5293172` on `codex/app-ui-polish`.
+- Successful workflow: https://github.com/zxypablo11/dusk-ios/actions/runs/43470903178.
+- CI: 44/44 UI/history/preferences/locale tests, 38/38 streaming tests and native streaming tests passed; unsigned iPhone archive compiled and uploaded.
+- Download: `dist-ipa/app-ui-polish/Dusk.ipa`, 3,026,098 bytes. SHA256: `123c268ad92a6921dd15d398ff8d16a760686324b26b4a0992cce7a03d6a30d7`.
+- Inspected IPA: UI core, mobile script/CSS, app script and locales match the checked source; the UI core is included before mobile initialization; build metadata identifies the source commit. App `io.github.zxypablo11.dusk`, widget `io.github.zxypablo11.dusk.LyricsWidget`, display name Dusk, minimum iOS 16.2.
+- Screenshots: `dist-ipa/app-ui-polish/ui-home.jpg`, `ui-search.jpg` and `ui-home-greyscale.jpg`.
+- Physical-device checks remaining: tap-to-audio latency, native VoiceOver, background playback and rapid selection on an actual iPhone. The IPA needs signing for sideloading.

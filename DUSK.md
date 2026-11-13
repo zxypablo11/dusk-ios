@@ -10,6 +10,8 @@ Der native Proxy hört ausschließlich auf Loopback. Seine zufälligen Session-/
 
 Die Node-Regressionstests stehen in `test/stream-playback.test.js`. `tools/test-dusk-stream.swift` prüft auf dem Mac die Playlistumschreibung, HTTP-Anfragen und einen echten Loopback-Stream mit einer simulierten Medienquelle. Der iPhone-Build führt diese Swift-Tests und die 38 relevanten Node-Tests vor Xcode aus. Lokal bestehen alle 38 Tests; die vollständige Windows-Suite hat 329 bestandene, zwei übersprungene und dieselben vier bereits vor dieser Änderung fehlgeschlagenen Tests. Die wahrgenommene Startzeit, Hintergrundwiedergabe, Seeking und Cache-Wiederverwendung müssen anschließend auf dem iPhone geprüft werden.
 
+Der [Mac-Build von `9558e03`](https://github.com/zxypablo11/dusk-ios/actions/runs/43451771221) hat die nativen Tests, alle 38 relevanten Node-Tests und den iOS-Releasebuild erfolgreich abgeschlossen. Die neue unsignierte IPA liegt lokal unter `dist-ipa/faster-song-start/Dusk.ipa` (3.021.946 Bytes; SHA-256 `a93c388f694aec5404ee76071a8229727e008447029699c9f3c272326a2dc97a`). Im Archiv geprüft: Bundle- und Widget-ID, lokales ATS sowie kompilierter Streaming-Proxy, mobiler Koordinator und Download-Rückfall. [Prüfbericht und offene Gerätetests](docs/superpowers/specs/2026-11-13-faster-song-start-verification.md).
+
 Stand: 10. November 2026. Technische Basis bleibt Muriel 1.3.10 (MIT). Zielgerät ist ein iPhone 14; iOS 27 / 27.2 ist die vom Nutzer gemeldete Version. Eine unsignierte IPA wurde auf dem GitHub-Mac-Runner gebaut und strukturell geprüft. Ein echtes iPhone wurde noch nicht getestet.
 
 ## Implementiert

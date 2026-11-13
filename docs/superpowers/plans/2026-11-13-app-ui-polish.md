@@ -69,3 +69,12 @@ Build routing: the corrected ARM Mac run remained queued for several minutes. Us
 - Inspected IPA: UI core, mobile script/CSS, app script and locales match the checked source; the UI core is included before mobile initialization; build metadata identifies the source commit. App `io.github.zxypablo11.dusk`, widget `io.github.zxypablo11.dusk.LyricsWidget`, display name Dusk, minimum iOS 16.2.
 - Screenshots: `dist-ipa/app-ui-polish/ui-home.jpg`, `ui-search.jpg` and `ui-home-greyscale.jpg`.
 - Physical-device checks remaining: tap-to-audio latency, native VoiceOver, background playback and rapid selection on an actual iPhone. The IPA needs signing for sideloading.
+
+## Logo follow-up
+
+The user supplied the DUSK logo and asked about its inclusion. The earlier UI IPA still used the committed headphones icon; the supplied logo was already prepared locally. The iPhone app icon now uses that version, including the DUSK wordmark, exported as an opaque 1024×1024 RGB PNG. Other user artwork and website files remain untouched.
+
+- Source: `f35b7f2ccd729cccf7b211e3a74d02d865cc7729`.
+- Successful build: https://github.com/zxypablo11/dusk-ios/actions/runs/43473653708; 44 UI tests, 38 streaming tests and native streaming tests passed.
+- New IPA: `dist-ipa/app-logo/Dusk.ipa`, 3,222,332 bytes; SHA256 `9742979797e3c62fdd59369a676ab04c471645d65ffa8df5d15cd14bc6355b99`. The earlier IPA is preserved.
+- The actual packaged iPhone icon was extracted and visually verified after decoding Apple's CgBI PNG format: `dist-ipa/app-logo/app-icon-preview.png` (120×120). App identity, iOS minimum, icon registration, source metadata and all five UI script/style/locale assets were verified.

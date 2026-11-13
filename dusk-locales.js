@@ -1160,7 +1160,21 @@
   "Appearance": "Darstellung",
   "Available offline": "Offline verfügbar",
   "Language & interface": "Sprache & Oberfläche",
-  "Quiet nights, Sakura petals, ink mist — light motion, offline.": "Ruhige Nächte, Sakura-Blüten, Tusche-Nebel — leichte Bewegung, offline."
+  "Quiet nights, Sakura petals, ink mist — light motion, offline.": "Ruhige Nächte, Sakura-Blüten, Tusche-Nebel — leichte Bewegung, offline.",
+  "Listen next": "Als Nächstes",
+  "Continue listening": "Weiterhören",
+  "Recent searches": "Zuletzt gesucht",
+  "Clear searches": "Suchverlauf löschen",
+  "Remove search": "Suchanfrage entfernen",
+  "Search for {0}": "Nach {0} suchen",
+  "Remove search for {0}": "Suchanfrage {0} entfernen",
+  "Recently visited artists": "Zuletzt besuchte Künstler",
+  "Loading {0}…": "{0} wird geladen …",
+  "Playing {0}": "{0} läuft",
+  "Paused {0}": "{0} pausiert",
+  "favorite": "Favorisieren",
+  "add to playlist": "Zur Playlist hinzufügen",
+  "download & options": "Download und Optionen"
 };
 if (typeof module !== 'undefined' && module.exports) module.exports = { de };
 else root.DuskLocales = { de };

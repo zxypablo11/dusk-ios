@@ -3819,7 +3819,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     state.loadToken++;
     const currentToken = state.loadToken;
     if (advancing || SKIP_CONTEXTS.has(context)) skipOnFailToken = currentToken;
-    setTrackLoading(true);
 
     if (state.currentAbortController) {
       state.currentAbortController.abort();
@@ -3828,6 +3827,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const signal = state.currentAbortController.signal;
 
     state.currentTrack = track;
+    setTrackLoading(true);
     emitPluginEvent('trackchange', track);
     onTrackAudioTrackChange();
     state.currentTrackContext = context;
@@ -7757,6 +7757,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? await fetchDuskAutoSearch(state.searchQuery, 20)
         : await fetchSearchPlatform(state.searchQuery, state.platform, 20);
       if (state.searchToken !== searchToken) return;
+      window.dispatchEvent(new CustomEvent('muriel:search', { detail: { query: trimmedQuery } }));
 
       if (!tracks.length) {
         if (el.searchTracksList) el.searchTracksList.innerHTML = `<div class="empty-hint" data-i18n>No results</div>`;
@@ -8655,6 +8656,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // follow by the channel when the page has one; a followed entry learns the picture and the channel
       artistOnPage = { name: artist.name || cleanName, id: artist.id || id || '', ids: artist.ids || [], avatar: artist.avatar || '', fans: artist.fans || 0 };
+      window.dispatchEvent(new CustomEvent('muriel:artist', { detail: artistOnPage }));
       const refreshed = Lib.refreshFollowed(getFollowedArtists(), artistOnPage);
       if (refreshed.changed) setFollowedArtists(refreshed.list);
       updateFollowButton();
@@ -20725,6 +20727,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     state,
     // Presentation adapters share the existing engine and repositories.
     navigate: switchView,
+    search: (query) => {
+      if (el.searchInput) el.searchInput.value = query;
+      if (el.searchClearBtn) el.searchClearBtn.classList.toggle('hidden', !query);
+      return performSearch(query);
+    },
+    trackKey: getTrackCanonicalId,
+    refreshTrackSelection: highlightPlayingRow,
     openPlayer: (tab = 'now') => openPanelDrawer(tab),
     closePlayer: closePanelDrawer,
     download: (track) => openDownloadModal(track),

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build an unsigned, private test artifact. Sideloading supplies the signing identity.
+# Build an unsigned test artifact. Sideloading supplies the signing identity.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ "$(uname -s)" != Darwin ]]; then
@@ -13,6 +13,7 @@ fi
 mkdir -p build
 swiftc -swift-version 5 ios/App/App/DuskStreamProtocol.swift ios/App/App/DuskStreamProxy.swift tools/test-dusk-stream.swift -o build/dusk-stream-tests
 build/dusk-stream-tests
+node --test test/stream-playback.test.js test/youtube-opus.test.js test/soundcloud-hls.test.js test/background-audio.test.js test/stream-proxy-17.test.js
 node tools/build-locales.mjs
 node mobile/build.mjs
 node node_modules/@capacitor/cli/bin/capacitor sync ios

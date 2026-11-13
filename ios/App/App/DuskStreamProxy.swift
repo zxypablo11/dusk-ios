@@ -34,7 +34,7 @@ final class DuskStreamProxy: NSObject, URLSessionTaskDelegate {
 
     static func isMediaURL(_ url: URL) -> Bool {
         guard url.scheme?.lowercased() == "https", let host = url.host?.lowercased(), url.user == nil, url.password == nil else { return false }
-        return ["googlevideo.com", "sndcdn.com"].contains { host == $0 || host.hasSuffix("." + $0) }
+        return ["googlevideo.com", "sndcdn.com", "media-streaming.soundcloud.cloud"].contains { host == $0 || host.hasSuffix("." + $0) }
     }
 
     init(session: URLSession? = nil, allowURL: @escaping (URL) -> Bool = DuskStreamProxy.isMediaURL) {
@@ -142,8 +142,9 @@ final class DuskStreamProxy: NSObject, URLSessionTaskDelegate {
 
     private func fetch(_ entry: Media, resource: String, range: String?, completion: @escaping (Result<Reply, Error>) -> Void) {
         guard media[entry.id] === entry, let url = entry.resources[resource] else { completion(.failure(DuskStreamError("Stream closed"))); return }
-        // A server may ignore an open byte range; doing so lets the player and full-segment cache share it.
-        let range = range == "bytes=0-" ? nil : range
+        // Playlists must be complete to rewrite their URLs. Share open segment requests with the cache.
+        let isPlaylist = resource == "master.m3u8" || url.pathExtension.lowercased() == "m3u8"
+        let range = isPlaylist || range == "bytes=0-" ? nil : range
         let key = entry.id + "|" + resource + "|" + (range ?? "")
         if let reply = cache[key] { completion(.success(reply)); return }
         if pending[key] != nil { pending[key]?.append(completion); return }

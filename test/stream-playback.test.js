@@ -126,11 +126,30 @@ test('a native stream failure after playback started retries the download and re
   assert.ok(from>=0, 'native stream failures need a mid-song fallback');
   let loading=false, retried=false;
   const track={id:'a'}, handlers=new Map();
-  const audio={currentTime:37,duration:120,addEventListener:(name,fn)=>handlers.set(name,fn),removeEventListener:name=>handlers.delete(name)};
-  const context={mobileStreamId:'s',state:{loadToken:2,currentTrack:track},el:{nativeAudio:audio},setTrackLoading:value=>{loading=value;},retryFresh:()=>{retried=true;return true;}};
+  const audio={paused:false,currentTime:37,duration:120,pause(){this.paused=true;},addEventListener:(name,fn)=>handlers.set(name,fn),removeEventListener:name=>handlers.delete(name)};
+  const context={mobileStreamId:'s',state:{loadToken:2,currentTrack:track},el:{nativeAudio:audio},setTrackLoading:value=>{assert.equal(audio.paused,true,'keepalive sees a paused element');loading=value;},retryFresh:()=>{retried=true;return true;}};
   const retry=vm.runInNewContext(text.slice(from,to)+'\nretryMobileStream',context);
   assert.equal(retry(2,track),true); assert.equal(loading,true); assert.equal(retried,true);
   audio.currentTime=0; handlers.get('loadedmetadata')(); assert.equal(audio.currentTime,37);
   assert.equal(handlers.size,0);
   assert.equal(retry(1,track),false, 'an error from an old selection cannot restart it');
+});
+
+test('short YouTube links share the canonical offline download source', async () => {
+  for (const link of ['https://youtu.be/abcdefghijk?si=tracking','https://music.youtube.com/watch?v=abcdefghijk']) {
+    const url=new global.URL(URL); url.searchParams.set('url',link);
+    const h=harness(); await h.player.lookup(url.href);
+    assert.equal(h.player.downloadSource(target)?.url,'http://localhost:1234/s1/master.m3u8');
+    h.player.release('s1');
+  }
+});
+
+test('a mid-song native stall uses the loading fallback to keep iPhone audio alive', () => {
+  const text=fs.readFileSync(require.resolve('../app.js'),'utf8');
+  const from=text.indexOf('    function watchStall() {'),to=text.indexOf('    // Each look-up starts',from);
+  let callback, fallback=0;
+  const track={id:'a',platform:'youtube'}, audio={paused:false,currentTime:37,readyState:2,addEventListener(){},removeEventListener(){}};
+  const context={state:{loadToken:1,currentTrack:track,trackLoading:false},el:{nativeAudio:audio},navigator:{onLine:true},mobileStreamId:'s',clearStall(){},setTimeout:fn=>{callback=fn;return 1;},console:{warn(){}},retryMobileStream:()=>{fallback++;return true;},attachStream:()=>Promise.resolve(true),applyAudioSettings(){}};
+  vm.runInNewContext(text.slice(from,to)+'\nwatchStall()',context); callback();
+  assert.equal(fallback,1);
 });

@@ -32,9 +32,9 @@
 
 **Interfaces:** `createStreamPlayback({call, resolveAudio, plugin, log})` produces `lookup(url, init)`, `started(streamId)`, `release(streamId)`, `downloadSource(target, audio)`. Native plugin consumes `start({url,headers})` and `stop({id})`, returns `{id,url}`. Stream answers contain `mobileStreamId`, `isHls:true`, and the loopback URL.
 
-- [ ] Write and run failing tests for cached-first lookup, response before complete download, unsupported-source/error fallback, abort-before/after-native-start, shared offline source, release after caching, and cache-only endpoint.
-- [ ] Implement the coordinator, connect native iOS only, preserve retries and bound startup stalls.
-- [ ] Run `node --test test/stream-playback.test.js test/youtube-opus.test.js test/soundcloud-hls.test.js test/background-audio.test.js test/stream-proxy-17.test.js`.
+- [x] Write and run failing tests for cached-first lookup, response before complete download, unsupported-source/error fallback, abort-before/after-native-start, shared offline source, release after caching, and cache-only endpoint.
+- [x] Implement the coordinator, connect native iOS only, preserve retries and bound startup stalls.
+- [x] Run `node --test test/stream-playback.test.js test/youtube-opus.test.js test/soundcloud-hls.test.js test/background-audio.test.js test/stream-proxy-17.test.js`.
 
 ### Task 2: Native HLS proxy and build verification
 
@@ -42,9 +42,9 @@
 
 **Interfaces:** `DuskStreamProtocol` parses bounded HTTP requests and rewrites HLS resources. `DuskStreamPlugin.start/stop` follows Task 1. The proxy shares concurrent requests, keeps bounded segment data, and releases tasks and sockets on stop.
 
-- [ ] Write portable Swift tests for relative/absolute segment URIs, initialization segments, opaque identifiers, invalid requests/ranges, encrypted and non-HTTPS playlists.
-- [ ] Implement and register the native plugin, add localhost-only ATS support and the Swift test runner to the Mac build.
-- [ ] Build locales and the web bundle, run the relevant tests and full existing Node suite, inspect the complete diff, and obtain one independent code review.
+- [x] Write portable Swift tests for relative/absolute segment URIs, initialization segments, opaque identifiers, invalid requests/ranges, encrypted and non-HTTPS playlists.
+- [x] Implement and register the native plugin, add localhost-only ATS support and the Swift test runner to the Mac build.
+- [x] Build locales and the web bundle, run the relevant tests and full existing Node suite, inspect the complete diff, and obtain one independent code review.
 - [ ] Verify the Swift tests and iOS compilation on a Mac runner if GitHub access is available; otherwise report that native compilation remains unverified.
 
 ## Execution note

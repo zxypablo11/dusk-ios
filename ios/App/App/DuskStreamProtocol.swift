@@ -25,9 +25,13 @@ enum DuskStreamProtocol {
             guard let colon = line.firstIndex(of: ":") else { continue }
             if line[..<colon].lowercased() != "range" { continue }
             let value = line[line.index(after: colon)...].trimmingCharacters(in: .whitespaces)
-            guard range == nil, value.range(of: "^bytes=[0-9]+-[0-9]*$", options: .regularExpression) != nil else { throw DuskStreamError("Invalid byte range") }
+            guard range == nil, value.range(of: "^bytes=(?:[0-9]+-[0-9]*|-[0-9]+)$", options: .regularExpression) != nil else { throw DuskStreamError("Invalid byte range") }
             let ends = value.dropFirst(6).split(separator: "-", omittingEmptySubsequences: false)
-            guard let start = UInt64(ends[0]), ends[1].isEmpty || (UInt64(ends[1]).map { $0 >= start } ?? false) else { throw DuskStreamError("Invalid byte range") }
+            if ends[0].isEmpty {
+                guard let suffix = UInt64(ends[1]), suffix > 0 else { throw DuskStreamError("Invalid byte range") }
+            } else {
+                guard let start = UInt64(ends[0]), ends[1].isEmpty || (UInt64(ends[1]).map { $0 >= start } ?? false) else { throw DuskStreamError("Invalid byte range") }
+            }
             range = value
         }
         return Request(method: String(first[0]), path: String(first[1]), range: range)

@@ -119,3 +119,18 @@ test('cache-only server lookup never starts a complete audio download on a miss'
   await handle({on(){}},{writeHead(){},end(v){body=JSON.parse(v);}},target,'abcdefghijk','youtube','','',0,'',false,true);
   assert.equal(downloads,0); assert.equal(body.code,'NOT_CACHED');
 });
+
+test('a native stream failure after playback started retries the download and restores position', () => {
+  const text=fs.readFileSync(require.resolve('../app.js'),'utf8');
+  const from=text.indexOf('  function retryMobileStream('), to=text.indexOf('  async function attachStream(',from);
+  assert.ok(from>=0, 'native stream failures need a mid-song fallback');
+  let loading=false, retried=false;
+  const track={id:'a'}, handlers=new Map();
+  const audio={currentTime:37,duration:120,addEventListener:(name,fn)=>handlers.set(name,fn),removeEventListener:name=>handlers.delete(name)};
+  const context={mobileStreamId:'s',state:{loadToken:2,currentTrack:track},el:{nativeAudio:audio},setTrackLoading:value=>{loading=value;},retryFresh:()=>{retried=true;return true;}};
+  const retry=vm.runInNewContext(text.slice(from,to)+'\nretryMobileStream',context);
+  assert.equal(retry(2,track),true); assert.equal(loading,true); assert.equal(retried,true);
+  audio.currentTime=0; handlers.get('loadedmetadata')(); assert.equal(audio.currentTime,37);
+  assert.equal(handlers.size,0);
+  assert.equal(retry(1,track),false, 'an error from an old selection cannot restart it');
+});

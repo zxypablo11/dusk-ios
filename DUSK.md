@@ -1,5 +1,15 @@
 # Dusk: mobile App und iPhone-Build
 
+## Schneller Songstart (13. November 2026)
+
+Neue iPhone-HLS-Titel können über `DuskStreamPlugin` bereits nach dem Laden der Playlist und erster Audiosegmente abspielen. Der vorhandene HTML-Player, Queue, MediaSession und Unterbrechungsbehandlung bleiben zuständig. Bereits gespeicherte Titel werden zuerst aus dem lokalen Cache geladen. Android, Desktop, Quellen ohne HLS und explizite Wiederholungen verwenden den bisherigen Downloadweg.
+
+Der native Proxy hört ausschließlich auf Loopback. Seine zufälligen Session-/Ressourcenkennungen verweisen auf HTTPS-Medien unter `googlevideo.com` und `sndcdn.com`; er erhält die vom Resolver benötigten HTTP-Header und verweigert verschlüsselte Playlists. Audiosegmente werden zwischen dem Player und dem Offline-Downloader geteilt. Nach drei Sekunden tatsächlicher Wiedergabe beginnt die vollständige Offline-Sicherung; ein schneller Skip davor löst keinen zusätzlichen Gesamtdownload aus. Teilweise geladene Titel werden nicht als offline verfügbar gemeldet.
+
+`mobile/stream-playback.js` koordiniert lokalen Cache, native Vorbereitung, Abbruch und Session-Lebensdauer. Fehler beim Vorbereiten oder Abspielen fallen auf den bestehenden Downloadweg zurück. Bei einem Fehler während der Wiedergabe wird die Abspielposition nach dem Rückfall wiederhergestellt. Native Sessions sind auf vier begrenzt; ihr gemeinsam genutzter Segmentcache auf 32 MiB.
+
+Die Node-Regressionstests stehen in `test/stream-playback.test.js`. `tools/test-dusk-stream.swift` prüft auf dem Mac die Playlistumschreibung, HTTP-Anfragen und einen echten Loopback-Stream mit einer simulierten Medienquelle. Der iPhone-Build führt diese Swift-Tests vor Xcode aus. Die wahrgenommene Startzeit, Hintergrundwiedergabe, Seeking und Cache-Wiederverwendung müssen anschließend auf dem iPhone geprüft werden.
+
 Stand: 10. November 2026. Technische Basis bleibt Muriel 1.3.10 (MIT). Zielgerät ist ein iPhone 14; iOS 27 / 27.2 ist die vom Nutzer gemeldete Version. Eine unsignierte IPA wurde auf dem GitHub-Mac-Runner gebaut und strukturell geprüft. Ein echtes iPhone wurde noch nicht getestet.
 
 ## Implementiert

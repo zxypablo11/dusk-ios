@@ -3758,6 +3758,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   async function playTrack(track, queueList = null, startIndex = -1, context = null) {
     if (!track || !el.nativeAudio) return;
+    releaseMobileStream();
     resetLevelWatcher();
     vizPrev = null;
     if (state.currentTrack && state.currentTrack.id !== track.id && !navigatingBack) pushPlayHistory(state.currentTrack);
@@ -3920,6 +3921,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!mobileStreamId) return;
     window.dispatchEvent(new CustomEvent('muriel:stream-release', { detail: { id: mobileStreamId } }));
     mobileStreamId = null;
+  }
+  function retryMobileStream(token, track) {
+    if (!mobileStreamId || token !== state.loadToken || track !== state.currentTrack) return false;
+    const audio = el.nativeAudio, position = audio.currentTime || 0;
+    const resume = () => {
+      audio.removeEventListener('loadedmetadata', resume);
+      if (token === state.loadToken && track === state.currentTrack && position > 0 && (!audio.duration || position < audio.duration)) {
+        try { audio.currentTime = position; } catch (_) {}
+      }
+    };
+    audio.addEventListener('loadedmetadata', resume);
+    setTrackLoading(true);
+    if (retryFresh(token, track)) return true;
+    audio.removeEventListener('loadedmetadata', resume);
+    return false;
   }
   async function attachStream(track, resolvedUrl, resolvedId, currentToken, signal, fresh) {
     releaseMobileStream();
@@ -6463,6 +6479,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       state.isPlaying = false;
       document.body.classList.remove('is-playing');
       if (tryProxyFallback(state.loadToken, state.currentTrack)) return;
+      if (retryMobileStream(state.loadToken, state.currentTrack)) return;
       if (retryFresh(state.loadToken, state.currentTrack)) return;
       updatePlayPauseButton(false, false);
       if (skipUnplayable(state.loadToken, state.currentTrack)) return;

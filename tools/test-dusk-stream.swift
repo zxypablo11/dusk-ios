@@ -53,7 +53,10 @@ struct DuskStreamTests {
 
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [FakeMedia.self]
-        let proxy = DuskStreamProxy(session: URLSession(configuration: config))
+        try check(DuskStreamProxy.isMediaURL(URL(string: "https://rr1.googlevideo.com/a")!), "allows YouTube media hosts")
+        try check(!DuskStreamProxy.isMediaURL(URL(string: "https://googlevideo.com.evil.example/a")!), "rejects lookalike media hosts")
+        try check(!DuskStreamProxy.isMediaURL(URL(string: "https://localhost/a")!), "rejects local upstream URLs")
+        let proxy = DuskStreamProxy(session: URLSession(configuration: config), allowURL: { $0.scheme == "https" && $0.host == "media.example" })
         let stream: DuskStreamProxy.Stream = try await withCheckedThrowingContinuation { continuation in
             proxy.start(url: base, headers: ["User-Agent": "resolver"]) { continuation.resume(with: $0) }
         }
@@ -63,7 +66,7 @@ struct DuskStreamTests {
         let urls = playlist.split(separator: "\n").filter { !$0.hasPrefix("#") }.map { URL(string: String($0))! }
         let (first, _) = try await URLSession.shared.data(from: urls[0])
         try check(first == Data([0xff, 0xf1, 1, 2, 3]), "first audio segment is playable without the second")
-        let (_, _) = try await URLSession.shared.data(from: urls[0])
+        _ = try await URLSession.shared.data(from: urls[0])
         try check(FakeMedia.requests.filter { $0 == "/path/first.aac" }.count == 1, "playback and offline download share segment requests")
         try check(!FakeMedia.requests.contains("/path/second.aac"), "no full-song download blocks first audio")
         try check(FakeMedia.sawUserAgent, "resolver headers reach the media server")

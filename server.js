@@ -2381,7 +2381,7 @@ async function alternativeUploads(cleanId, title, artist, duration) {
 }
 
 // fresh: the app could not play the URL it got last time (or the lookup failed): skip the remembered URL
-async function handleStreamInfo(req, res, trackUrl, trackId, platform = 'youtube', title = '', artist = '', duration = 0, thumbnail = '', fresh = false) {
+async function handleStreamInfo(req, res, trackUrl, trackId, platform = 'youtube', title = '', artist = '', duration = 0, thumbnail = '', fresh = false, cachedOnly = false) {
   let cleanId = cleanTrackId(trackId);
   if (!cleanId && trackUrl && trackUrl.includes('v=')) {
     cleanId = cleanTrackId(trackUrl.split('v=')[1].split('&')[0]);
@@ -2412,6 +2412,12 @@ async function handleStreamInfo(req, res, trackUrl, trackId, platform = 'youtube
     };
     res.writeHead(200, { 'Content-Type': 'application/json' });
     return res.end(JSON.stringify(data));
+  }
+
+  // The iPhone streaming coordinator checks local files without starting or joining a full download.
+  if (cachedOnly) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ success: false, code: 'NOT_CACHED' }));
   }
 
   const cacheKey = (cleanId || trackUrl || `${artist}_${title}`).toLowerCase();
@@ -6655,7 +6661,7 @@ const server = http.createServer(guardHandler(async (req, res) => {
     const artist = parsedUrl.query.artist || '';
     const duration = parsedUrl.query.duration || 0;
     const thumbnail = parsedUrl.query.thumbnail || '';
-    return handleStreamInfo(req, res, trackUrl, trackId, platform, title, artist, duration, thumbnail, parsedUrl.query.fresh === '1');
+    return handleStreamInfo(req, res, trackUrl, trackId, platform, title, artist, duration, thumbnail, parsedUrl.query.fresh === '1', parsedUrl.query.cached_only === '1');
   }
 
   if (parsedUrl.pathname === '/api/local-track') {

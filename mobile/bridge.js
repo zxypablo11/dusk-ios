@@ -108,6 +108,17 @@ function call(url, init = {}) {
 }
 const abortError = () => new DOMException('The operation was aborted.', 'AbortError');
 
+// Native HLS retains the resolver's headers and shares its small segments with the offline downloader.
+let streamPlayback=null;
+if (Capacitor.isNativePlatform() && Capacitor.getPlatform()==='ios') {
+  const { registerPlugin }=require('@capacitor/core');
+  const { createStreamPlayback }=require('./stream-playback');
+  streamPlayback=createStreamPlayback({ call,resolveAudio:require('./extract').resolveAudio,plugin:registerPlugin('DuskStream'),log:murielLog });
+  globalThis.__murielStreamPlayback=streamPlayback;
+  window.addEventListener('muriel:stream-start',e=>streamPlayback.started(e.detail.id));
+  window.addEventListener('muriel:stream-release',e=>streamPlayback.release(e.detail.id));
+}
+
 const fileUrls = new Map();
 async function fileUrlFor(vpath) {
   if (!fileUrls.has(vpath)) {
@@ -130,7 +141,7 @@ window.fetch = async (input, init = {}) => {
   const started = Date.now();
   // app.js aborts the previous song's lookup on every skip; that now also stops its download (see http shim)
   if (init.signal && init.signal.aborted) throw abortError();
-  let r = await call(url, init);
+  let r = await (streamPlayback && new URL(url).pathname==='/api/stream-info' ? streamPlayback.lookup(url,init) : call(url, init));
   if (r.aborted || (init.signal && init.signal.aborted)) throw abortError();
   // loading a song can fail on a passing YouTube/network hiccup; one quiet retry fixes most of them.
   // A slow failure already went through every download route, so repeating it only burns data and battery.

@@ -126,7 +126,7 @@ async function downloadRanges(url, headers, signal, size) {
 const playsOpus = () => !!globalThis.__murielPlaysOpus;
 
 async function download(args, target, signal) {
-  const audio = await ex.resolveAudio(target);
+  const audio = (globalThis.__murielStreamPlayback && globalThis.__murielStreamPlayback.downloadSource(target)) || await ex.resolveAudio(target);
   if (signal && signal.aborted) throw new Error('download cancelled');
   const template = opt(args, '-o');
   // yt-dlp templates: the user-facing download keeps the real container (no ffmpeg on iOS to convert)

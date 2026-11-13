@@ -3915,12 +3915,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Looks the song up (/api/stream-info) and gives its stream to the audio element. Resolves false when
   // another song was started meanwhile; throws when there is nothing to play.
+  let mobileStreamId = null;
+  function releaseMobileStream() {
+    if (!mobileStreamId) return;
+    window.dispatchEvent(new CustomEvent('muriel:stream-release', { detail: { id: mobileStreamId } }));
+    mobileStreamId = null;
+  }
   async function attachStream(track, resolvedUrl, resolvedId, currentToken, signal, fresh) {
+    releaseMobileStream();
     const streamInfoUrl = `http://127.0.0.1:${state.serverPort}/api/stream-info?url=${encodeURIComponent(resolvedUrl || '')}&id=${encodeURIComponent(resolvedId || '')}${fresh ? '&fresh=1' : ''}&platform=${track.platform || state.platform}&title=${encodeURIComponent(track.title || '')}&artist=${encodeURIComponent(track.artist || '')}&duration=${encodeURIComponent(track.duration || 0)}&thumbnail=${encodeURIComponent(track.thumbnail || '')}`;
     const res = await fetch(streamInfoUrl, { signal });
     const data = await res.json();
 
-    if (currentToken !== state.loadToken) return false;
+    if (currentToken !== state.loadToken) {
+      if (data && data.mobileStreamId) window.dispatchEvent(new CustomEvent('muriel:stream-release', { detail: { id: data.mobileStreamId } }));
+      return false;
+    }
 
     if (!data || !data.success || !data.streamUrl) {
       if (!navigator.onLine) {
@@ -3943,7 +3953,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     el.nativeAudio.preload = 'auto';
 
-    if (data.isHls && window.Hls && Hls.isSupported()) {
+    mobileStreamId = data.mobileStreamId || null;
+    if (mobileStreamId) {
+      const id = mobileStreamId;
+      const started = () => {
+        el.nativeAudio.removeEventListener('playing', started);
+        if (currentToken === state.loadToken && mobileStreamId === id) window.dispatchEvent(new CustomEvent('muriel:stream-start', { detail: { id } }));
+      };
+      el.nativeAudio.addEventListener('playing', started, { once: true });
+    }
+
+    // Native iPhone HLS reads the header-preserving loopback proxy without hls.js/MSE buffering.
+    if (data.isHls && !data.mobileStreamId && window.Hls && Hls.isSupported()) {
       hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true, maxBufferLength: 30, maxMaxBufferLength: 60, maxBufferSize: 30 * 1000 * 1000 });
       hlsInstance.loadSource(data.streamUrl);
       hlsInstance.attachMedia(el.nativeAudio);

@@ -10,6 +10,9 @@ if [[ ! "${DUSK_BUNDLE_ID:-}" =~ ^[A-Za-z][A-Za-z0-9-]*(\.[A-Za-z][A-Za-z0-9-]*)
   echo 'Set DUSK_BUNDLE_ID to your own reverse-DNS app identifier.' >&2
   exit 1
 fi
+mkdir -p build
+swiftc -swift-version 5 ios/App/App/DuskStreamProtocol.swift ios/App/App/DuskStreamProxy.swift tools/test-dusk-stream.swift -o build/dusk-stream-tests
+build/dusk-stream-tests
 node tools/build-locales.mjs
 node mobile/build.mjs
 node node_modules/@capacitor/cli/bin/capacitor sync ios

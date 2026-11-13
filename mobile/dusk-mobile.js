@@ -14,6 +14,8 @@
     back: '<path d="m14 6-6 6 6 6"/>', down: '<path d="m6 9 6 6 6-6"/>',
     more: '<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
     play: '<path d="m9 5 11 7-11 7Z" fill="currentColor" stroke="none"/>',
+    pause: '<path d="M8 5v14M16 5v14" stroke-width="4"/>',
+    close: '<path d="m6 6 12 12M18 6 6 18"/>',
     heart: '<path d="M20 5c-3-3-7-1-8 1-1-2-5-4-8-1-4 4 2 10 8 15 6-5 12-11 8-15Z"/>',
     download: '<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',
     album: '<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="4"/>',
@@ -50,6 +52,8 @@
   function init() {
     const core = window.MurielCore;
     if (!core || $('dusk-header')) return;
+    const ui = window.DuskUiCore;
+    const history = ui.createHistory(localStorage);
     let tab = 'discover', homeFilter = 'for-you', view = 'dusk-home', playerTab = 'player';
     let previousFocus = null, renderFrame = 0, drawerOpen = false;
     const main = $('main-content'), panel = $('right-panel'), playbar = $('playbar');
@@ -91,8 +95,10 @@
     const libraryContent = node('div'); library.append(libraryContent);
     main.prepend(home, library);
     const searchHint = node('div', 'dusk-search-hint');
-    searchHint.append(node('h2', '', 'Find music'), node('p', '', 'Search for songs, artists or albums.'));
     $('view-discover').prepend(searchHint);
+    const feedbackLive = node('span', 'dusk-sr-only');
+    feedbackLive.setAttribute('role', 'status'); feedbackLive.setAttribute('aria-live', 'polite');
+    document.body.append(feedbackLive);
 
     // Retire controls whose desktop layouts have been replaced by this shell.
     for (const id of ['settings-slider-scale','setting-home-layout','setting-search-pos-row','btn-show-local','btn-show-albums','btn-show-artists','btn-wavy-progress','btn-progress-knob','btn-progress-bg','btn-no-hand-cursor']) {
@@ -135,6 +141,7 @@
       main.scrollTop = 0;
       if (next === 'dusk-home') renderHome();
       if (next === 'dusk-library') renderLibrary();
+      if (next === 'discover') renderSearchHistory();
     }
     function cover(track, className = 'dusk-cover') {
       const box = node('div', className); box.append(icon('note'));
@@ -149,6 +156,38 @@
       core.state.myWaveActive = false;
       core.playTrack(track, tracks, index);
     }
+    function markTrack(target, track) {
+      target.dataset.duskTrackKey = core.trackKey(track);
+      return target;
+    }
+    function syncPlaybackFeedback() {
+      const currentKey = core.state.currentTrack ? core.trackKey(core.state.currentTrack) : '';
+      core.refreshTrackSelection();
+      for (const target of document.querySelectorAll('[data-dusk-track-key], .track-row')) {
+        const key = target.dataset.duskTrackKey || (target.classList.contains('playing') ? target.dataset.canonicalId : '');
+        const phase = ui.playbackPhase(key, currentKey, core.state.trackLoading, core.audio.paused);
+        target.dataset.duskPlayback = phase;
+        if (phase === 'idle') { target.removeAttribute('aria-current'); target.removeAttribute('aria-busy'); }
+        else { target.setAttribute('aria-current', 'true'); target.setAttribute('aria-busy', String(phase === 'loading')); }
+        let marker = target.querySelector('.dusk-track-indicator');
+        if (!marker && phase !== 'idle') {
+          const title = target.querySelector('.dusk-song-meta strong, .dusk-resume-meta strong, .track-row-title, .dusk-hero-caption h2, :scope > strong');
+          if (title) {
+            const line = node(title.tagName === 'H2' ? 'div' : 'span', 'dusk-track-title-line');
+            marker = node('span', 'dusk-track-indicator'); marker.setAttribute('aria-hidden', 'true');
+            title.before(line); line.append(title, marker);
+          }
+        }
+        if (marker && marker.dataset.phase !== phase) {
+          marker.dataset.phase = phase;
+          marker.replaceChildren(...(phase === 'playing' ? [icon('play')] : phase === 'paused' ? [icon('pause')] : []));
+        }
+      }
+      const track = core.state.currentTrack;
+      const phase = ui.playbackPhase(currentKey, currentKey, core.state.trackLoading, core.audio.paused);
+      const label = track ? I.Tf(phase === 'loading' ? 'Loading {0}…' : phase === 'playing' ? 'Playing {0}' : 'Paused {0}', track.title || I.T('Untitled')) : '';
+      if (feedbackLive.textContent !== label) feedbackLive.textContent = label;
+    }
     function trackRow(track, tracks, index) {
       const row = node('div', 'dusk-song');
       const start = button('Play', null, () => play(track, tracks, index), 'dusk-song-play'); start.replaceChildren(cover(track));
@@ -156,13 +195,13 @@
       const meta = node('span', 'dusk-song-meta'); meta.append(node('strong', '', track.title || I.T('Untitled'), true), node('small', '', track.artist || '', true));
       start.append(meta);
       const more = button('Track options', 'more', () => core.trackMenu(track, more));
-      row.append(start, more); return row;
+      markTrack(start, track); row.append(start, more); return row;
     }
     function trackTile(track, tracks, index) {
       const b = button('Play', null, () => play(track, tracks, index), 'dusk-rail-tile');
       b.setAttribute('aria-label', I.Tf('Play {0}', track.title || ''));
       b.replaceChildren(cover(track, 'dusk-cover dusk-rail-cover'), node('strong', '', track.title || I.T('Untitled'), true), node('small', '', track.artist || '', true));
-      return b;
+      return markTrack(b, track);
     }
     function section(title, action) {
       const sec = node('section', 'dusk-section');
@@ -183,6 +222,29 @@
       const recommendations = root.dataset.duskHideRecommendations !== 'true';
       const recent = root.dataset.duskHideRecent !== 'true';
       const artists = root.dataset.duskHideArtists !== 'true';
+      if (homeFilter === 'for-you' && recent && data.recent.length) {
+        const sec = section('Continue listening'); sec.classList.add('dusk-continuation');
+        const grid = node('div', 'dusk-resume-grid');
+        const track = data.recent[0];
+        const resume = button('Play', null, () => {
+          if (core.state.currentTrack && core.trackKey(core.state.currentTrack) === core.trackKey(track)) {
+            if (!core.state.trackLoading) core.togglePlay();
+          } else play(track, data.recent, 0);
+        }, 'dusk-resume');
+        const meta = node('span', 'dusk-resume-meta');
+        meta.append(node('strong', '', track.title || I.T('Untitled'), true), node('small', '', track.artist || '', true));
+        resume.replaceChildren(cover(track), meta); resume.setAttribute('aria-label', I.Tf('Play {0}', track.title || ''));
+        grid.append(markTrack(resume, track));
+        const playlist = [...core.state.playlists].reverse().find(item => item.tracks?.length);
+        if (playlist) {
+          const open = button('Playlist', null, () => core.openPlaylist(playlist.id), 'dusk-resume');
+          const info = node('span', 'dusk-resume-meta');
+          info.append(node('strong', '', playlist.name, true), node('small', '', I.Tf('{0} tracks', playlist.tracks.length), true));
+          open.replaceChildren(cover({ thumbnail: playlist.cover || core.thumb(playlist.tracks[0]) }), info);
+          open.setAttribute('aria-label', playlist.name); grid.append(open);
+        }
+        sec.append(grid);
+      }
       if (homeFilter === 'mixes') {
         if (data.mixes.length) {
           const grid = node('div', 'dusk-mix-grid');
@@ -190,7 +252,7 @@
             if (!mix.tracks?.length) continue;
             const b = button('Play', null, () => play(mix.tracks[0], mix.tracks, 0), 'dusk-mix');
             b.replaceChildren(cover(mix.tracks[0]), node('strong', '', mix.title, true), node('small', '', (mix.artists || []).join(', '), true));
-            b.setAttribute('aria-label', I.Tf('Play {0}', mix.title)); grid.append(b);
+            b.setAttribute('aria-label', I.Tf('Play {0}', mix.title)); grid.append(markTrack(b, mix.tracks[0]));
           }
           homeContent.append(grid);
         } else homeContent.append(empty(data.loading ? 'Creating your mixes' : 'Your mixes start with you', 'Listen to a few songs and save your favorites. Your personal mixes will appear here.', 'Find music', () => route('discover')));
@@ -207,7 +269,7 @@
           caption.append(text, button('Play recommendations', 'play', startHero));
           art.append(caption);
           hero.append(art);
-          homeContent.append(hero);
+          homeContent.append(markTrack(hero, tracks[0]));
           if (homeFilter === 'for-you' && tracks.length > 1) {
             const sec = section('Listen next');
             const rail = node('div', 'dusk-rail');
@@ -237,6 +299,35 @@
         sec.append(row);
       }
       if (!homeContent.children.length) homeContent.append(empty('Make yourself at home', 'Choose what appears here in the theme editor.', 'Settings', () => route('settings')));
+      syncPlaybackFeedback();
+    }
+    function renderSearchHistory() {
+      searchHint.replaceChildren();
+      const queries = history.queries(), artists = history.artists();
+      if (queries.length) {
+        const head = node('div', 'dusk-section-head');
+        head.append(node('h2', '', 'Recent searches'), button('Clear searches', null, () => { history.clearQueries(); renderSearchHistory(); }, 'dusk-text-button'));
+        searchHint.append(head);
+        for (const query of queries) {
+          const row = node('div', 'dusk-search-history-row');
+          const run = button('Search', 'history', () => core.search(query), 'dusk-search-history-query');
+          run.replaceChildren(icon('history'), node('span', '', query, true)); run.setAttribute('aria-label', I.Tf('Search for {0}', query));
+          const remove = button('Remove search', 'close', () => { history.removeQuery(query); renderSearchHistory(); });
+          remove.setAttribute('aria-label', I.Tf('Remove search for {0}', query));
+          row.append(run, remove); searchHint.append(row);
+        }
+      }
+      if (artists.length) {
+        const section = node('section', 'dusk-search-artists'); section.append(node('h2', '', 'Recently visited artists'));
+        for (const artist of artists) {
+          const open = button('Artist', null, () => core.openArtist(artist), 'dusk-search-history-query');
+          open.replaceChildren(cover({ thumbnail: artist.avatar }), node('span', '', artist.name, true));
+          open.setAttribute('aria-label', artist.name); section.append(open);
+        }
+        searchHint.append(section);
+      }
+      if (!queries.length && !artists.length) searchHint.append(node('h2', '', 'Find music'), node('p', '', 'Search for songs, artists or albums.'));
+      updateSearchHint();
     }
     function renderLibrary() {
       libraryContent.replaceChildren();
@@ -338,6 +429,7 @@
       I.text(offline.querySelector('span'), offlineLabel);
       offline.dataset.label = offlineLabel; offline.setAttribute('aria-label', I.T(offlineLabel));
       playerMore.disabled = !hasTrack;
+      syncPlaybackFeedback();
       scheduleRender();
     }
     function scheduleRender() {
@@ -347,6 +439,13 @@
     function updateSearchHint() { searchHint.hidden = !$('search-results-container').classList.contains('hidden'); }
     new MutationObserver(updateSearchHint).observe($('search-results-container'), { attributes: true, attributeFilter: ['class'] });
     updateSearchHint();
+    window.addEventListener('muriel:search', e => { history.rememberQuery(e.detail.query); renderSearchHistory(); });
+    window.addEventListener('muriel:artist', e => { history.rememberArtist(e.detail); renderSearchHistory(); });
+    window.addEventListener('muriel:loading', syncPlaybackFeedback);
+    for (const event of ['play','playing','pause','ended','error']) core.audio.addEventListener(event, syncPlaybackFeedback);
+    new MutationObserver(changes => {
+      if (changes.some(change => [...change.addedNodes].some(item => item.nodeType === 1 && (item.matches('[data-dusk-track-key], .track-row') || item.querySelector('[data-dusk-track-key], .track-row'))))) syncPlaybackFeedback();
+    }).observe(main, { childList: true, subtree: true });
     window.addEventListener('muriel:view', e => syncView(e.detail.view));
     window.addEventListener('muriel:drawer', e => syncDrawer(e.detail));
     window.addEventListener('muriel:track', syncTrack);
@@ -358,6 +457,7 @@
       filters.setAttribute('aria-label', I.T('Discover'));
       syncView(view);
       syncTrack();
+      renderSearchHistory();
     });
     syncTrack();
     syncDrawer({ open: core.state.isRightPanelOpen, tab: core.state.drawerTab });

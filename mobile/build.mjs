@@ -48,7 +48,7 @@ cpSync(join(root, 'assets'), join(out, 'assets'), { recursive: true });
 cpSync(join(root, 'mobile', 'mobile.css'), join(out, 'mobile.css'));
 cpSync(join(root, 'mobile', 'mobile-ui.js'), join(out, 'mobile-ui.js'));
 
-for (const f of ['dusk-mobile.js', 'dusk-mobile.css']) cpSync(join(root, 'mobile', f), join(out, f));
+for (const f of ['dusk-mobile.js', 'dusk-mobile.css', 'dusk-ui-core.js']) cpSync(join(root, 'mobile', f), join(out, f));
 
 // profiles-core.js stays the first script: everything after it (mobile-bridge.js too) sees the open profile's storage
 let html = readFileSync(join(root, 'index.html'), 'utf8');
@@ -58,6 +58,6 @@ html = html
   .replace('<link rel="stylesheet" href="styles.css">', '<link rel="stylesheet" href="styles.css">\n  <link rel="stylesheet" href="mobile.css">')
   .replace('<script src="audio-engine.js"></script>', '<script src="mobile-bridge.js"></script>\n  <script src="audio-engine.js"></script>')
   .replace('</head>', '  <link rel="stylesheet" href="dusk-mobile.css">\n</head>')
-  .replace('<script src="app.js"></script>', '<script src="app.js"></script>\n  <script src="mobile-ui.js"></script>\n  <script src="dusk-mobile.js"></script>');
+  .replace('<script src="app.js"></script>', '<script src="app.js"></script>\n  <script src="mobile-ui.js"></script>\n  <script src="dusk-ui-core.js"></script>\n  <script src="dusk-mobile.js"></script>');
 writeFileSync(join(out, 'index.html'), html);
 console.log('www/ ready');

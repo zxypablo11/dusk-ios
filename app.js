@@ -3932,6 +3932,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
     };
     audio.addEventListener('loadedmetadata', resume);
+    audio.pause();
     setTrackLoading(true);
     if (retryFresh(token, track)) return true;
     audio.removeEventListener('loadedmetadata', resume);
@@ -6507,6 +6508,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const a = el.nativeAudio;
         if (token !== state.loadToken || track !== state.currentTrack || a.paused || a.readyState >= 3) return;
         if (!track || track.platform === 'local' || state.trackLoading || !navigator.onLine) return;
+        if (mobileStreamId && retryMobileStream(token, track)) return;
         const pos = a.currentTime || 0;
         console.warn('Track playback: stalled, looking the stream up again');
         const resume = () => { a.removeEventListener('loadedmetadata', resume); if (token === state.loadToken && pos > 1 && (!a.duration || pos < a.duration - 2)) a.currentTime = pos; };

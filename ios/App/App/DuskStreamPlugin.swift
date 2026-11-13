@@ -5,7 +5,7 @@ import Capacitor
 public class DuskStreamPlugin: CAPPlugin, CAPBridgedPlugin {
     public let identifier = "DuskStreamPlugin"
     public let jsName = "DuskStream"
-    public let pluginMethods = [
+    public let pluginMethods: [CAPPluginMethod] = [
         CAPPluginMethod(name: "start", returnType: CAPPluginReturnPromise),
         CAPPluginMethod(name: "stop", returnType: CAPPluginReturnPromise),
     ]

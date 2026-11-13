@@ -17,8 +17,14 @@ private final class FakeMedia: URLProtocol {
         Self.requests.append(url.path)
         Self.sawUserAgent = Self.sawUserAgent || request.value(forHTTPHeaderField: "User-Agent") == "resolver"
         let playlist = "#EXTM3U\n#EXT-X-TARGETDURATION:5\n#EXTINF:5,\nfirst.aac\n#EXTINF:5,\nsecond.aac\n#EXT-X-ENDLIST\n"
-        let data = url.path.hasSuffix(".m3u8") ? Data(playlist.utf8) : Data([0xff, 0xf1, 1, 2, 3])
-        let response = HTTPURLResponse(url: url, statusCode: 200, httpVersion: "HTTP/1.1", headerFields: ["Content-Type": url.path.hasSuffix(".m3u8") ? "application/vnd.apple.mpegurl" : "audio/aac"])!
+        var data = url.path.hasSuffix(".m3u8") ? Data(playlist.utf8) : Data([0xff, 0xf1, 1, 2, 3])
+        var headers = ["Content-Type": url.path.hasSuffix(".m3u8") ? "application/vnd.apple.mpegurl" : "audio/aac"]
+        let partial = request.value(forHTTPHeaderField: "Range") == "bytes=0-1"
+        if partial {
+            headers["Content-Range"] = "bytes 0-1/\(data.count)"
+            data = Data(data.prefix(2))
+        }
+        let response = HTTPURLResponse(url: url, statusCode: partial ? 206 : 200, httpVersion: "HTTP/1.1", headerFields: headers)!
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
         client?.urlProtocol(self, didLoad: data)
         client?.urlProtocolDidFinishLoading(self)
@@ -45,7 +51,9 @@ struct DuskStreamTests {
         }
         let request = try DuskStreamProtocol.parseRequest(Data("GET /stream/s/r HTTP/1.1\r\nHost: localhost\r\nRange: bytes=1-9\r\n\r\n".utf8))
         try check(request.path == "/stream/s/r" && request.range == "bytes=1-9", "valid request and byte range")
-        for text in ["POST / HTTP/1.1\r\n\r\n", "GET / HTTP/1.1\r\nRange: bytes=1-2,4-5\r\n\r\n", String(repeating: "x", count: 17000)] {
+        let suffix = try DuskStreamProtocol.parseRequest(Data("GET /stream/s/r HTTP/1.1\r\nRange: bytes=-9\r\n\r\n".utf8))
+        try check(suffix.range == "bytes=-9", "valid suffix byte range")
+        for text in ["POST / HTTP/1.1\r\n\r\n", "GET / HTTP/1.1\r\nRange: bytes=1-2,4-5\r\n\r\n", "GET / HTTP/1.1\r\nRange: bytes=-0\r\n\r\n", "GET / HTTP/1.1\r\nRange: bytes=9-1\r\n\r\n", "GET / HTTP/1.1\r\nRange: bytes=-18446744073709551616\r\n\r\n", String(repeating: "x", count: 17000)] {
             var rejected = false
             do { _ = try DuskStreamProtocol.parseRequest(Data(text.utf8)) } catch { rejected = true }
             try check(rejected, "refuses unsupported methods, multipart ranges and oversized requests")
@@ -54,6 +62,7 @@ struct DuskStreamTests {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [FakeMedia.self]
         try check(DuskStreamProxy.isMediaURL(URL(string: "https://rr1.googlevideo.com/a")!), "allows YouTube media hosts")
+        try check(DuskStreamProxy.isMediaURL(URL(string: "https://playback.media-streaming.soundcloud.cloud/track/a.m3u8")!), "allows the extractor's SoundCloud AAC host")
         try check(!DuskStreamProxy.isMediaURL(URL(string: "https://googlevideo.com.evil.example/a")!), "rejects lookalike media hosts")
         try check(!DuskStreamProxy.isMediaURL(URL(string: "https://localhost/a")!), "rejects local upstream URLs")
         let proxy = DuskStreamProxy(session: URLSession(configuration: config), allowURL: { $0.scheme == "https" && $0.host == "media.example" })
@@ -63,6 +72,10 @@ struct DuskStreamTests {
         try check(FakeMedia.requests == ["/path/audio.m3u8"], "starting only fetches the playlist, not the complete song")
         let (playlistData, _) = try await URLSession.shared.data(from: stream.url)
         let playlist = String(decoding: playlistData, as: UTF8.self)
+        var probe = URLRequest(url: stream.url)
+        probe.setValue("bytes=0-1", forHTTPHeaderField: "Range")
+        let (probeData, _) = try await URLSession.shared.data(for: probe)
+        try check(String(decoding: probeData, as: UTF8.self).contains("http://localhost:"), "a range probe cannot bypass playlist rewriting")
         let urls = playlist.split(separator: "\n").filter { !$0.hasPrefix("#") }.map { URL(string: String($0))! }
         let (first, _) = try await URLSession.shared.data(from: urls[0])
         try check(first == Data([0xff, 0xf1, 1, 2, 3]), "first audio segment is playable without the second")

@@ -3,8 +3,13 @@
 const abortError = () => Object.assign(new Error('Playback request aborted'), { name: 'AbortError' });
 function keyOf(target) {
   const text = String(target || '');
-  const video = text.match(/[?&]v=([\w-]{11})(?:[&#]|$)/);
-  return video ? `youtube:${video[1]}` : text;
+  try {
+    const url = new URL(text), host = url.hostname.replace(/^www\./, '');
+    const video = host === 'youtu.be' ? url.pathname.slice(1).split('/')[0]
+      : host === 'youtube.com' || host.endsWith('.youtube.com') ? url.searchParams.get('v') : '';
+    if (/^[A-Za-z0-9_-]{6,}$/.test(video || '')) return `youtube:${video}`;
+  } catch (_) {}
+  return text;
 }
 function guarded(promise, signal, dispose) {
   return new Promise((resolve,reject) => {

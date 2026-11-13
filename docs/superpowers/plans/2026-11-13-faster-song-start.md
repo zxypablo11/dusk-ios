@@ -45,8 +45,10 @@
 - [x] Write portable Swift tests for relative/absolute segment URIs, initialization segments, opaque identifiers, invalid requests/ranges, encrypted and non-HTTPS playlists.
 - [x] Implement and register the native plugin, add localhost-only ATS support and the Swift test runner to the Mac build.
 - [x] Build locales and the web bundle, run the relevant tests and full existing Node suite, inspect the complete diff, and obtain one independent code review.
-- [ ] Verify the Swift tests and iOS compilation on a Mac runner if GitHub access is available; otherwise report that native compilation remains unverified.
+- [x] Verify the Swift tests and iOS compilation on a Mac runner if GitHub access is available; otherwise report that native compilation remains unverified.
 
 ## Execution note
 
 Implement in the current checkout on `codex/faster-song-start` to retain installed dependencies and pending user assets. The user approved implementation; no additional execution-method confirmation is needed. Only this task's files are staged/committed. Device playback remains a required follow-up validation, not a claim made by automated tests.
+
+Final code verification: Mac run `43451771221` built `9558e031ce7bac818125fbfb7a250c4b1427e613` successfully, including native tests and 38/38 relevant Node tests. The downloaded IPA contains the compiled plugin, streaming coordinator and download fallback. Full Windows suite: 329 passed, four unchanged baseline failures, two skipped (335 total). See `docs/superpowers/specs/2026-11-13-faster-song-start-verification.md` for evidence and remaining device checks.

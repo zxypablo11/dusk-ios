@@ -1,4 +1,4 @@
-// Runs Muriel's own server.js inside the iOS app and makes app.js think it is talking to the
+// Runs Dusk's own server.js inside the iOS app and makes app.js think it is talking to the
 // desktop backend on 127.0.0.1. Loaded before app.js.
 const { Capacitor } = require('@capacitor/core');
 const store = require('./shims/store');
@@ -8,7 +8,7 @@ const { enforceCacheLimit } = require('./cache-limit');
 const electronAPI = require('./electron-api');
 
 // ---- error log ("Fehlerlog teilen" in Settings): last 300 warnings/errors, kept across restarts ----
-const LOG_KEY = 'muriel_debug_log';
+const LOG_KEY = 'dusk_debug_log';
 const logLines = (() => { try { return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); } catch (e) { return []; } })();
 let logSaveTimer = null;
 function murielLog(level, msg) {
@@ -26,10 +26,10 @@ for (const level of ['warn', 'error']) {
 window.addEventListener('error', (e) => murielLog('error', `${e.message} @ ${(e.filename || '').split('/').pop()}:${e.lineno}`));
 window.addEventListener('unhandledrejection', (e) => murielLog('error', `unhandled: ${(e.reason && (e.reason.stack || e.reason.message)) || e.reason}`));
 // for mobile-ui.js (a plain script): trim the song cache right after the limit is lowered
-window.MurielCache = { enforceLimit: () => enforceCacheLimit() };
-window.MurielLog = {
+window.DuskCache = { enforceLimit: () => enforceCacheLimit() };
+window.DuskLog = {
   add: murielLog,
-  text: () => [`Muriel ${navigator.userAgent}`, `platform: ${Capacitor.getPlatform()}`, ...logLines].join('\n'),
+  text: () => [`Dusk ${navigator.userAgent}`, `platform: ${Capacitor.getPlatform()}`, ...logLines].join('\n'),
   clear: () => { logLines.length = 0; try { localStorage.removeItem(LOG_KEY); } catch (e) {} },
 };
 
@@ -55,7 +55,7 @@ async function toPlain(input, init = {}) {
 // Every outside request gets a deadline. Android's native HTTP has none and iOS waits up to 10 minutes, so one
 // stalled request (network switch, captive portal) kept a song "loading" until the app was restarted.
 const REQUEST_DEADLINE_MS = 30000;
-globalThis.__murielFetch = async (input, init) => {
+globalThis.__duskFetch = async (input, init) => {
   const [url, opts] = await toPlain(input, init);
   const timeout = typeof AbortSignal !== 'undefined' && AbortSignal.timeout ? AbortSignal.timeout(REQUEST_DEADLINE_MS) : null;
   if (timeout) opts.signal = opts.signal && AbortSignal.any ? AbortSignal.any([opts.signal, timeout]) : (opts.signal || timeout);
@@ -72,11 +72,11 @@ globalThis.__murielFetch = async (input, init) => {
 };
 
 // ---- secrets server.js keeps (the Last.fm logins) ----
-// In the WebView's own storage, which only Muriel can read; not under /data, which on iPhone is the Muriel folder
-// the Files app shows (and backs up). One entry per device (profiles-core.js lists muriel_secret_ as a device key)
+// In the WebView's own storage, which only Dusk can read; not under /data, which on iPhone is the Dusk folder
+// the Files app shows (and backs up). One entry per device (profiles-core.js lists dusk_secret_ as a device key)
 // holding each profile's login, like lastfm-auth.enc on desktop. Never synced, never in an account export.
 globalThis.__murielVault = (name) => {
-  const key = `muriel_secret_${String(name).replace(/[^a-z0-9_]/gi, '')}`;
+  const key = `dusk_secret_${String(name).replace(/[^a-z0-9_]/gi, '')}`;
   return {
     read() {
       const raw = localStorage.getItem(key);
@@ -101,7 +101,7 @@ function call(url, init = {}) {
     url: url.slice(BASE.length - 1),
     method: init.method || 'GET',
     // there's no socket to protect in-app, but server.js checks its CSRF token, so every call carries it
-    headers: { ...(init.headers instanceof Headers ? Object.fromEntries(init.headers.entries()) : (init.headers || {})), 'x-muriel-token': server.getServerToken() },
+    headers: { ...(init.headers instanceof Headers ? Object.fromEntries(init.headers.entries()) : (init.headers || {})), 'x-dusk-token': server.getServerToken() },
     body: typeof init.body === 'string' ? init.body : '',
     signal: init.signal,
   }));
@@ -114,9 +114,9 @@ if (Capacitor.isNativePlatform() && Capacitor.getPlatform()==='ios') {
   const { registerPlugin }=require('@capacitor/core');
   const { createStreamPlayback }=require('./stream-playback');
   streamPlayback=createStreamPlayback({ call,resolveAudio:require('./extract').resolveAudio,plugin:registerPlugin('DuskStream'),log:murielLog });
-  globalThis.__murielStreamPlayback=streamPlayback;
-  window.addEventListener('muriel:stream-start',e=>streamPlayback.started(e.detail.id));
-  window.addEventListener('muriel:stream-release',e=>streamPlayback.release(e.detail.id));
+  globalThis.__duskStreamPlayback=streamPlayback;
+  window.addEventListener('dusk:stream-start',e=>streamPlayback.started(e.detail.id));
+  window.addEventListener('dusk:stream-release',e=>streamPlayback.release(e.detail.id));
 }
 
 const fileUrls = new Map();
@@ -166,7 +166,7 @@ function patchSrc(proto) {
       this.__murielSrc = v;
       this.__murielPending = resolveLocalUrl(v)
         .then((real) => { if (this.__murielSrc === v) desc.set.call(this, real); })
-        .catch((e) => { console.warn('[muriel]', e.message); if (this.__murielSrc === v) this.dispatchEvent(new Event('error')); });
+        .catch((e) => { console.warn('[dusk]', e.message); if (this.__murielSrc === v) this.dispatchEvent(new Event('error')); });
     },
   });
 }
@@ -203,11 +203,11 @@ new MutationObserver((muts) => {
 // On Home it backgrounds the app (music keeps playing) rather than closing it.
 if (Capacitor.getPlatform() === 'android') {
   // YouTube songs download as Opus (WebM) instead of AAC (shims/child_process.js)
-  globalThis.__murielPlaysOpus = true;
+  globalThis.__duskPlaysOpus = true;
   const { App } = require('@capacitor/app');
   const visible = (el) => el && !el.classList.contains('hidden') && getComputedStyle(el).display !== 'none';
   App.addListener('backButton', () => {
-    if (window.MurielEncore && document.querySelector('.encore')) { window.MurielEncore.close(); return; }
+    if (window.DuskEncore && document.querySelector('.encore')) { window.DuskEncore.close(); return; }
     const modal = [...document.querySelectorAll('.modal-backdrop')].reverse().find((m) => visible(m) && m.classList.contains('visible'));
     if (modal) {
       const closeBtn = modal.querySelector('[id^="btn-close"], [id^="btn-cancel"], .modal-close');
@@ -220,20 +220,20 @@ if (Capacitor.getPlatform() === 'android') {
     if (visible(drawer)) { document.getElementById('btn-close-rail-drawer').click(); return; }
     if (document.body.classList.contains('np-open')) { document.getElementById('btn-close-right-panel').click(); return; }
     // Settings: out of the search, then out of the open category back to the list of categories
-    if (window.MurielSettingsBack && window.MurielSettingsBack()) return;
+    if (window.DuskSettingsBack && window.DuskSettingsBack()) return;
     const home = document.getElementById('nav-discover');
     if (home && !home.classList.contains('active')) { home.click(); return; }
     App.minimizeApp();
   });
 }
 
-// muriel://link?code=… (the QR code in Settings → Sync, scanned with the camera) opens the app; sync.js links it
+// dusk://link?code=… (the QR code in Settings → Sync, scanned with the camera) opens the app; sync.js links it
 {
   const { App } = require('@capacitor/app');
   const deliver = (url) => {
-    if (!url || !/^muriel:/i.test(url)) return;
-    const go = () => window.dispatchEvent(new CustomEvent('muriel:deeplink', { detail: url }));
-    if (window.MurielSync) go(); else window.addEventListener('muriel:ready', () => setTimeout(go, 300), { once: true });
+    if (!url || !/^dusk:/i.test(url)) return;
+    const go = () => window.dispatchEvent(new CustomEvent('dusk:deeplink', { detail: url }));
+    if (window.MurielSync) go(); else window.addEventListener('dusk:ready', () => setTimeout(go, 300), { once: true });
   };
   App.addListener('appUrlOpen', (e) => deliver(e && e.url));
   App.getLaunchUrl().then((r) => deliver(r && r.url)).catch(() => {});

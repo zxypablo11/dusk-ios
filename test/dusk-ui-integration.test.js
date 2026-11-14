@@ -21,8 +21,8 @@ function searchApp() {
   const classList = () => ({ add() {}, remove() {} });
   clear.classList = classList();
   const store = memory(), history = UI.createHistory(store), window = new EventTarget();
-  store.setItem('muriel_search_artists', '0');
-  window.addEventListener('muriel:search', e => { events.push(e.detail.query); history.rememberQuery(e.detail.query); });
+  store.setItem('dusk_search_artists', '0');
+  window.addEventListener('dusk:search', e => { events.push(e.detail.query); history.rememberQuery(e.detail.query); });
   const ctx = {
     state: { platform: 'youtube', searchResults: [] }, window, localStorage: store,
     el: { searchInput: input, searchClearBtn: clear, discoverEmpty: { classList: classList() }, searchResultsContainer: { classList: classList() }, searchTracksList: {} },

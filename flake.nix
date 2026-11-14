@@ -1,5 +1,5 @@
 {
-  description = "Muriel - a desktop audio player (Electron)";
+  description = "Dusk - a desktop audio player (Electron)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -10,7 +10,7 @@
     let
       mkMuriel = pkgs:
         pkgs.buildNpmPackage rec {
-          pname = "muriel";
+          pname = "dusk";
           version = "42.0.0";
           src = self;
 
@@ -24,16 +24,16 @@
 
           installPhase =
             let
-              appDir = "$out/share/muriel";
+              appDir = "$out/share/dusk";
               runtimeDeps = pkgs.lib.makeBinPath [ pkgs.yt-dlp pkgs.ffmpeg ];
               desktop = pkgs.makeDesktopItem {
-                name = "Muriel";
-                desktopName = "Muriel";
+                name = "Dusk";
+                desktopName = "Dusk";
                 genericName = "Audio Player";
-                exec = "muriel";
-                icon = "muriel";
+                exec = "dusk";
+                icon = "dusk";
                 categories = [ "AudioVideo" "Audio" "Player" ];
-                startupWMClass = "muriel";
+                startupWMClass = "dusk";
               };
             in
             ''
@@ -43,7 +43,7 @@
               for f in *; do cp -r "$f" ${appDir}/; done
 
               mkdir -p $out/bin
-              makeWrapper ${pkgs.electron}/bin/electron $out/bin/muriel \
+              makeWrapper ${pkgs.electron}/bin/electron $out/bin/dusk \
                 --add-flags ${appDir} \
                 --prefix PATH : ${runtimeDeps}
 
@@ -51,16 +51,16 @@
               cp ${desktop}/share/applications/*.desktop $out/share/applications/
 
               mkdir -p $out/share/icons/hicolor/256x256/apps
-              cp ${appDir}/assets/icon.png $out/share/icons/hicolor/256x256/apps/muriel.png
+              cp ${appDir}/assets/icon.png $out/share/icons/hicolor/256x256/apps/dusk.png
 
               runHook postInstall
             '';
 
           meta = with pkgs.lib; {
-            description = "Muriel - audio player made for humans";
+            description = "Dusk - audio player made for humans";
             homepage = "https://github.com/cloverscripts/riff-muriel";
             license = licenses.mit;
-            mainProgram = "muriel";
+            mainProgram = "dusk";
             platforms = platforms.linux ++ platforms.darwin;
           };
         };
@@ -72,7 +72,7 @@
       {
         packages = {
           default = mkMuriel pkgs;
-          muriel = mkMuriel pkgs;
+          dusk = mkMuriel pkgs;
         };
 
         devShells.default = pkgs.mkShell {
@@ -84,14 +84,14 @@
           ];
 
           shellHook = ''
-            echo "Muriel dev shell. Install deps and run with:"
+            echo "Dusk dev shell. Install deps and run with:"
             echo "  npm install && npm start"
           '';
         };
       })
     // {
       overlays.default = final: prev: {
-        muriel = mkMuriel final;
+        dusk = mkMuriel final;
       };
     };
 }

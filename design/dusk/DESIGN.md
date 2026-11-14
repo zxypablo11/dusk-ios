@@ -1,20 +1,22 @@
-# Dusk — Designrichtung für iPhone
+# Dusk — Designrichtung
+
+Dusk is a free music player for everyone (desktop, phone, browser). These comps started on a phone canvas; the same tokens and calm chrome apply across platforms.
 
 ## Revision 2: Personalisierung (10. November 2026)
 
-Bestätigt: Deutsch und Englisch, automatische Gerätesprache, kleines zurückhaltendes Logo; iPhone 14 mit gemeldetem iOS 27 / 27.2. Das D-Monogramm und der große Sora-Schriftzug wurden durch ein Horizontzeichen und einen kleinen, schlichten Dusk-Schriftzug ersetzt. Inter approximiert im Entwurf die native Systemschrift. Die neue Seite **Dusk · Personalisierung** ergänzt Einstellungen, sechs Themes und einen Theme-Editor.
+Bestätigt: Deutsch und Englisch, automatische Gerätesprache, kleines zurückhaltendes Logo. Frühe Entwürfe zielten auf iPhone 14; die Richtung gilt für die gesamte App. Das D-Monogramm und der große Sora-Schriftzug wurden durch ein Horizontzeichen und einen kleinen, schlichten Dusk-Schriftzug ersetzt. Inter approximiert im Entwurf die native Systemschrift. Die Seite **Dusk · Personalisierung** ergänzt Einstellungen, sechs Themes und einen Theme-Editor.
 
 Figma: https://www.figma.com/design/0yMqrWseFEJHvPok1JpEtA/Dusk-iPhone?node-id=2-3
 
 Der SVG-Import wurde mit sichtbaren Texten und Coverbildern geprüft. `figma-personalization.jpg` zeigt den Figma-Stand. Die bisherige Seite wurde beibehalten. `dusk-personalization.svg/.png` und die Einzelscreens entstehen mit `python3 design/dusk/render-personalization.py`. Der Entwurf ist statisch, editierbar, ohne Auto Layout oder Prototyp-Verbindungen.
 
-Funktionale Umsetzung und Prüfungen stehen in `../../DUSK.md`. Die mobile Hauptnavigation, Startseite, Sammlung, Player und Einstellungsübersicht sind in der App integriert. Detailseiten nutzen weiterhin die bestehende Muriel-Basis. Systemeinstellungen, Sprachwahl und Themes funktionieren im lokalen Webbuild. Native iPhone-Prüfung steht aus.
+Funktionale Umsetzung und Prüfungen stehen in `../../DUSK.md`. Die mobile Hauptnavigation, Startseite, Sammlung, Player und Einstellungsübersicht sind in der App integriert. Detailseiten nutzen weiterhin die bestehende Dusk-Basis. Systemeinstellungen, Sprachwahl und Themes funktionieren im lokalen Webbuild. Native iPhone-Prüfung steht aus.
 
 Die folgenden Abschnitte dokumentieren die ursprüngliche Designrichtung und sind teilweise durch Revision 2 ersetzt.
 
 ## Bestätigt
 
-Name: Dusk. Zielgerät: iPhone 14. Sideloading ist akzeptiert. Muriel bleibt die technische Basis und die visuelle Referenz für dunkle, weiche und aufgeräumte Flächen. Dusk erhält eine eigene Gestaltung. Keine Glow-Effekte.
+Name: Dusk. Free player for everyone — Windows, phone, browser. Sideloading on iOS is fine where App Store isn’t the path. Visual reference: dark, soft, quiet surfaces. No glow effects.
 
 ## Annahmen für diesen Entwurf
 
@@ -47,7 +49,7 @@ Die allgemeine UI/UX-Suche lieferte für Musik teilweise unpassende Landingpage-
 
 ## Umsetzung nach Designabstimmung
 
-Die mobile Ansicht von Muriel erhält eine abgegrenzte Dusk-Themeschicht und gezielte Änderungen an der mobilen Navigation. Playerzustand, Datenhaltung und Quelladapter bleiben zunächst die bestehende technische Grundlage. Originale Lizenzhinweise werden beibehalten. Keine neue Framework-Abhängigkeit für das Rebranding.
+Die mobile Ansicht von Dusk erhält eine abgegrenzte Dusk-Themeschicht und gezielte Änderungen an der mobilen Navigation. Playerzustand, Datenhaltung und Quelladapter bleiben zunächst die bestehende technische Grundlage. Originale Lizenzhinweise werden beibehalten. Keine neue Framework-Abhängigkeit für das Rebranding.
 
 Vor der Implementierung werden aus dem bestätigten Entwurf gemeinsame Farb-, Schrift-, Abstands- und Radius-Tokens abgeleitet. Touch-Flächen mindestens 44 × 44 Punkte; Schriftgrößen müssen später mit Dynamic Type, VoiceOver und den echten Safe Areas geprüft werden. Ein statischer Figma-Entwurf belegt keine funktionierende Wiedergabe oder Downloads.
 

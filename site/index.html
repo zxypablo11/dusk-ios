@@ -4,11 +4,11 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Dusk</title>
-  <meta name="description" content="Dusk — kostenloser iPhone-Musikplayer. YouTube, YouTube Music, SoundCloud. Ohne Werbung, ohne Konto.">
+  <meta name="description" content="Dusk — kostenloser Musikplayer für alle. Windows, iPhone, Android, Browser. YouTube, YouTube Music, SoundCloud. Ohne Werbung, ohne Konto.">
   <meta name="theme-color" content="#050506">
   <meta name="color-scheme" content="dark">
   <meta property="og:title" content="Dusk">
-  <meta property="og:description" content="Musik für die Stunde danach. Kostenloser iPhone-Player.">
+  <meta property="og:description" content="Musik für die Stunde danach. Kostenloser Player für jeden — Desktop und Phone.">
   <meta property="og:image" content="shots/dusk-horizon.jpg">
   <link rel="icon" href="dusk-icon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,11 +24,10 @@
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
       <b>Dusk</b>
     </a>
-    <a class="top-cta" href="#holen">IPA holen</a>
+    <a class="top-cta" href="#holen">Holen</a>
   </header>
 
   <main id="main">
-    <!-- One composition: brand + night + one line + CTA. Product phone is the edge-to-edge visual plane. -->
     <section class="hero">
       <div class="hero-sky" aria-hidden="true">
         <img src="shots/dusk-horizon.jpg" alt="" width="1376" height="768" fetchpriority="high">
@@ -37,9 +36,9 @@
         <div class="hero-copy">
           <p class="name">Dusk</p>
           <h1>Musik für die Stunde danach.</h1>
-          <p class="lede">Kostenloser iPhone-Player. YouTube, YouTube Music, SoundCloud — ohne Werbung, ohne Konto.</p>
+          <p class="lede">Kostenloser Musikplayer für alle — Windows, Phone, Browser. YouTube, YouTube Music, SoundCloud. Ohne Werbung, ohne Konto.</p>
           <div class="actions">
-            <a class="go" href="#holen">IPA holen</a>
+            <a class="go" href="#holen">Holen</a>
             <a class="quiet" href="https://github.com/zxypablo11/dusk-ios">Quellcode</a>
           </div>
         </div>
@@ -95,13 +94,13 @@
     </section>
 
     <section class="strip" aria-label="Was Dusk ist">
-      <p>Cover zuerst. Chrome danach. Eine Quelle wird gewählt — du tippst nur den Song.</p>
+      <p>Ein Player für jeden. Cover zuerst. Chrome danach. Du tippst den Song — fertig.</p>
     </section>
 
     <section class="panel" id="player">
       <div class="panel-copy">
         <h2>Now Playing ohne Ablenkung.</h2>
-        <p>Großes Cover, klare Transport-Leiste, Lyrics und Warteschlange unten. Kein Dashboard, kein Glow.</p>
+        <p>Großes Cover, klare Transport-Leiste, Lyrics und Warteschlange. Kein Dashboard, kein Glow — auf dem Desktop wie auf dem Phone.</p>
       </div>
       <div class="panel-device" aria-hidden="true">
         <div class="phone slim">
@@ -134,21 +133,21 @@
     </section>
 
     <section class="get" id="holen">
-      <h2>Aufs iPhone.</h2>
+      <h2>Für dich gebaut.</h2>
       <ol>
-        <li><strong>Bauen</strong> — GitHub Actions → Dusk iPhone test build → Artefakt <em>Dusk-iPhone</em>.</li>
-        <li><strong>Signieren</strong> — IPA in <a href="https://sideloadly.io/">Sideloadly</a> mit Apple-ID und USB-iPhone.</li>
-        <li><strong>Vertrauen</strong> — Einstellungen → Allgemein → VPN &amp; Geräteverwaltung.</li>
+        <li><strong>Windows</strong> — Desktop-App (Tauri): Installer / EXE aus dem Repo unter <code>desktop/</code>.</li>
+        <li><strong>iPhone</strong> — IPA bauen, mit Sideloadly o. Ä. signieren, unter Einstellungen vertrauen.</li>
+        <li><strong>Android / Browser</strong> — Capacitor-APK bzw. lokaler Web-Preview (<code>mobile/dev-server.mjs</code>).</li>
       </ol>
       <div class="actions">
-        <a class="go" id="ipa-link" href="https://github.com/zxypablo11/dusk-ios/actions/workflows/dusk-ios.yml">Zum IPA-Build</a>
-        <a class="quiet" href="https://sideloadly.io/">Sideloadly</a>
+        <a class="go" href="https://github.com/zxypablo11/dusk-ios">Zum Repo</a>
+        <a class="quiet" href="https://sideloadly.io/">Sideloadly (iPhone)</a>
       </div>
     </section>
   </main>
 
   <footer class="foot">
-    <p><b>Dusk</b> · Open Source · MIT</p>
+    <p><b>Dusk</b> · Free music player for everyone · MIT</p>
     <p><a href="https://github.com/zxypablo11/dusk-ios">github.com/zxypablo11/dusk-ios</a></p>
   </footer>
 

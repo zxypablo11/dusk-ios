@@ -2,9 +2,9 @@
 // the app, test/backup-core.test.js in Node.
 // - Playlist files (JSON) are meant to be shared, so reading one trusts nothing: only plain text and numbers are
 //   kept, songs must point at YouTube or SoundCloud (or be a song from this device's library), pictures must be
-//   https, and everything is capped. The format is upstream Riff's, so either app reads the other's files.
-// - A backup is one profile's own localStorage keys. Restoring one only writes Muriel's data and settings keys:
-//   never the device's (profiles-core.js), the sync link, other profiles, logins or custom CSS. Riff's encrypted
+//   https, and everything is capped. The format is upstream Dusk's, so either app reads the other's files.
+// - A backup is one profile's own localStorage keys. Restoring one only writes Dusk's data and settings keys:
+//   never the device's (profiles-core.js), the sync link, other profiles, logins or custom CSS. Dusk's encrypted
 //   account files (.rfacc) are read too: they are the same thing under a fixed, public key.
 (function (root) {
   const LIMITS = { fileBytes: 30e6, playlists: 2000, tracksPerPlaylist: 20000, tracks: 200000, keyBytes: 8e6, totalBytes: 24e6 };
@@ -38,7 +38,7 @@
     return d > 0 && d < 86400 ? Math.round(d) : 0;
   };
 
-  // A song from a shared playlist file -> a Muriel track, or null. A song with only a title and artist is kept
+  // A song from a shared playlist file -> a Dusk track, or null. A song with only a title and artist is kept
   // with needsMatch: true; backup.js looks it up on YouTube, like a Spotify import.
   function cleanSharedTrack(t) {
     if (!isObj(t)) return null;
@@ -64,7 +64,7 @@
     return title ? { ...base, ...(thumb ? { thumbnail: thumb } : {}), needsMatch: true } : null;
   }
 
-  // the playlists in a playlist file (Muriel's, Riff's, or a bare list of songs); [] when there are none
+  // the playlists in a playlist file (Dusk's, Dusk's, or a bare list of songs); [] when there are none
   function parsePlaylistFile(text) {
     if (typeof text !== 'string' || !text.trim() || text.length > LIMITS.fileBytes) return [];
     let data;
@@ -97,7 +97,7 @@
     return out;
   }
 
-  // Muriel playlists -> a playlist file. Songs from this device's files keep only their library id (the file
+  // Dusk playlists -> a playlist file. Songs from this device's files keep only their library id (the file
   // itself, its path and the local server's address stay here).
   function exportTrack(t) {
     if (!isObj(t)) return null;
@@ -116,7 +116,7 @@
 
   function playlistFile(playlists, { appVersion = '' } = {}) {
     return {
-      app: 'Muriel',
+      app: 'Dusk',
       appVersion: String(appVersion || ''),
       exportedAt: new Date().toISOString(),
       playlists: (playlists || []).filter(isObj).map((p) => {
@@ -131,15 +131,15 @@
   }
 
   // a file name from a playlist or profile name
-  const fileName = (name, ext) => `${clip(name, 60).replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_').replace(/^\.+/, '') || 'muriel'}.${ext}`;
+  const fileName = (name, ext) => `${clip(name, 60).replace(/[\\/:*?"<>|\u0000-\u001f]+/g, '_').replace(/^\.+/, '') || 'dusk'}.${ext}`;
 
   // ---------- backups ----------
-  const KEY_RE = /^(?:muriel|devsize)_[A-Za-z0-9_.:-]{1,80}$/;
+  const KEY_RE = /^(?:dusk|devsize)_[A-Za-z0-9_.:-]{1,80}$/;
   // never written by a restore, never in a backup: the sync link (and which devices are in it), the profile list,
   // logins, phone logs, and things that only mean something on the device they were made on
-  // (a Riff file also carries its Last.fm login in plain text: Muriel keeps logins in the server's vault instead)
-  const NEVER = [/^muriel_sync_/, /^muriel_p:/, /^muriel_secret_/, /^muriel_profiles?(?:_|$)/, /^muriel_debug_log$/,
-    /^muriel_custom_css/, /^muriel_bg_(?:url|vpath)$/, /^muriel_banner_media$/, /^muriel_lastfm_(?!enabled$)/];
+  // (a Dusk file also carries its Last.fm login in plain text: Dusk keeps logins in the server's vault instead)
+  const NEVER = [/^dusk_sync_/, /^dusk_p:/, /^dusk_secret_/, /^dusk_profiles?(?:_|$)/, /^dusk_debug_log$/,
+    /^dusk_custom_css/, /^dusk_bg_(?:url|vpath)$/, /^dusk_banner_media$/, /^dusk_lastfm_(?!enabled$)/];
   const neverKey = (k) => NEVER.some((re) => re.test(k));
   function backupKeyAllowed(key, isDevice) {
     if (typeof key !== 'string' || !KEY_RE.test(key) || neverKey(key)) return false;
@@ -153,10 +153,10 @@
   function makeBackup(entries, { profileName = '', appVersion = '', isDevice } = {}) {
     const data = {};
     for (const [k, v] of entries) if (typeof v === 'string' && backupKeyAllowed(k, isDevice)) data[k] = v;
-    return { app: 'Muriel', kind: 'muriel-backup', version: 1, appVersion: String(appVersion || ''), exportedAt: new Date().toISOString(), profile: { name: clip(profileName, 24) }, data };
+    return { app: 'Dusk', kind: 'dusk-backup', version: 1, appVersion: String(appVersion || ''), exportedAt: new Date().toISOString(), profile: { name: clip(profileName, 24) }, data };
   }
 
-  // A stored track, as the app itself saves it. A restore keeps its own fields (text, numbers, true/false; Muriel
+  // A stored track, as the app itself saves it. A restore keeps its own fields (text, numbers, true/false; Dusk
   // tracks are flat), drops anything else, and only lets through addresses a picture or song can come from.
   const URL_FIELDS = new Set(['url', 'thumbnail', 'cover', 'image', 'artworkUrl', 'localThumbnail']);
   function storedUrl(v) {
@@ -210,22 +210,22 @@
     devsize_history: (v) => cleanTrackList(v, 5000),
   };
 
-  // Upstream Riff's localStorage names: riff_x became muriel_x in Muriel (tools/rename-riff.py)
-  const fromRiff = (k) => (typeof k === 'string' && k.startsWith('riff_') ? `muriel_${k.slice(5)}` : k);
+  // Upstream Dusk's localStorage names: dusk_x became dusk_x in Dusk (tools/rename-dusk.py)
+  const fromRiff = (k) => (typeof k === 'string' && k.startsWith('dusk_') ? `dusk_${k.slice(5)}` : k);
 
   // A backup file's contents (already parsed) -> what a restore writes. Throws an Error with a message for people.
   function readBackup(obj, { isDevice } = {}) {
-    if (!isObj(obj)) throw new Error("That file isn't a Muriel backup");
+    if (!isObj(obj)) throw new Error("That file isn't a Dusk backup");
     let source = '';
     let raw = null;
-    if (obj.kind === 'muriel-backup' && isObj(obj.data)) { source = 'muriel'; raw = obj.data; }
-    else if (isObj(obj.localStorage) && (obj.app === 'Riff' || obj.app === 'Muriel')) { source = 'riff'; raw = obj.localStorage; }
-    if (!raw) throw new Error("That file isn't a Muriel backup or a Riff account file");
+    if (obj.kind === 'dusk-backup' && isObj(obj.data)) { source = 'dusk'; raw = obj.data; }
+    else if (isObj(obj.localStorage) && (obj.app === 'Dusk' || obj.app === 'Dusk')) { source = 'dusk'; raw = obj.localStorage; }
+    if (!raw) throw new Error("That file isn't a Dusk backup or a Dusk account file");
     const entries = {};
     const skipped = [];
     let total = 0;
     for (const k0 of Object.keys(raw).slice(0, 5000)) {
-      const k = source === 'riff' ? fromRiff(k0) : k0;
+      const k = source === 'dusk' ? fromRiff(k0) : k0;
       let v = raw[k0];
       if (!backupKeyAllowed(k, isDevice) || v == null) { skipped.push(k); continue; }
       if (typeof v !== 'string') { try { v = JSON.stringify(v); } catch (e) { skipped.push(k); continue; } }
@@ -246,15 +246,15 @@
       source,
       entries,
       skipped,
-      profileName: source === 'muriel' && isObj(obj.profile) ? clip(obj.profile.name, 24) : '',
+      profileName: source === 'dusk' && isObj(obj.profile) ? clip(obj.profile.name, 24) : '',
       counts: { playlists: count('devsize_playlists'), favorites: count('devsize_favorites'), history: count('devsize_history'), keys: Object.keys(entries).length },
     };
   }
 
-  // ---------- Riff account files (.rfacc) ----------
-  // "RFAC", a 12-byte IV, a 16-byte GCM tag, then AES-256-GCM of deflate-raw(JSON) under sha256('riff-account-key-v1')
-  // (upstream main.js). The key is in Riff's source, so this is packaging, not protection.
-  const isRiffAccount = (bytes) => bytes && bytes.length > 32 && bytes[0] === 0x52 && bytes[1] === 0x46 && bytes[2] === 0x41 && bytes[3] === 0x43;
+  // ---------- Dusk account files (.rfacc) ----------
+  // "RFAC", a 12-byte IV, a 16-byte GCM tag, then AES-256-GCM of deflate-raw(JSON) under sha256('dusk-account-key-v1')
+  // (upstream main.js). The key is in Dusk's source, so this is packaging, not protection.
+  const isLegacyAccount = (bytes) => bytes && bytes.length > 32 && bytes[0] === 0x52 && bytes[1] === 0x46 && bytes[2] === 0x41 && bytes[3] === 0x43;
 
   async function inflateRaw(bytes, max) {
     const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
@@ -276,9 +276,9 @@
 
   async function readRiffAccount(bytes) {
     const subtle = typeof crypto !== 'undefined' && crypto.subtle;
-    if (!subtle || typeof DecompressionStream !== 'function') throw new Error("This device can't open Riff account files");
-    if (!isRiffAccount(bytes)) throw new Error("That file isn't a Riff account file");
-    const keyBytes = await subtle.digest('SHA-256', new TextEncoder().encode('riff-account-key-v1'));
+    if (!subtle || typeof DecompressionStream !== 'function') throw new Error("This device can't open Dusk account files");
+    if (!isLegacyAccount(bytes)) throw new Error("That file isn't a Dusk account file");
+    const keyBytes = await subtle.digest('SHA-256', new TextEncoder().encode('dusk-account-key-v1'));
     const key = await subtle.importKey('raw', keyBytes, { name: 'AES-GCM' }, false, ['decrypt']);
     const iv = bytes.slice(4, 16);
     const tag = bytes.slice(16, 32);
@@ -287,19 +287,19 @@
     sealed.set(body);
     sealed.set(tag, body.length);
     let plain;
-    try { plain = new Uint8Array(await subtle.decrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, sealed)); } catch (e) { throw new Error('That Riff account file is damaged'); }
+    try { plain = new Uint8Array(await subtle.decrypt({ name: 'AES-GCM', iv, tagLength: 128 }, key, sealed)); } catch (e) { throw new Error('That Dusk account file is damaged'); }
     const json = new TextDecoder().decode(await inflateRaw(plain, LIMITS.totalBytes * 2));
-    try { return JSON.parse(json); } catch (e) { throw new Error('That Riff account file is damaged'); }
+    try { return JSON.parse(json); } catch (e) { throw new Error('That Dusk account file is damaged'); }
   }
 
   // bytes of a picked backup file -> its parsed contents
   async function parseBackupFile(bytes) {
     if (!bytes || bytes.length > LIMITS.fileBytes) throw new Error('That file is too big');
-    if (isRiffAccount(bytes)) return readRiffAccount(bytes);
-    try { return JSON.parse(new TextDecoder().decode(bytes).replace(/^\uFEFF/, '')); } catch (e) { throw new Error("That file isn't a Muriel backup"); }
+    if (isLegacyAccount(bytes)) return readRiffAccount(bytes);
+    try { return JSON.parse(new TextDecoder().decode(bytes).replace(/^\uFEFF/, '')); } catch (e) { throw new Error("That file isn't a Dusk backup"); }
   }
 
-  const api = { LIMITS, cleanSharedTrack, parsePlaylistFile, exportTrack, playlistFile, fileName, backupKeyAllowed, keepOnRestore, makeBackup, cleanStoredTrack, cleanStoredPlaylists, readBackup, isRiffAccount, readRiffAccount, parseBackupFile };
+  const api = { LIMITS, cleanSharedTrack, parsePlaylistFile, exportTrack, playlistFile, fileName, backupKeyAllowed, keepOnRestore, makeBackup, cleanStoredTrack, cleanStoredPlaylists, readBackup, isLegacyAccount, readRiffAccount, parseBackupFile };
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.MurielBackup = api;
 })(typeof window !== 'undefined' ? window : globalThis);

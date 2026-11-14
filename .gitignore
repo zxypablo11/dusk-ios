@@ -23,3 +23,8 @@ site/play/share-link.js
 # Local development and native build output
 build/
 .claude/
+.cursor/
+.superpowers/
+
+# Accidental Windows type-name files
+System.Drawing.*

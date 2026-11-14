@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="dusk.css">
 </head>
 <body class="no-nav-transition">
-  <div id="splash" aria-hidden="true"><div id="splash-logo"><svg class="dusk-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0M4 18h16"/></svg></div></div>
+  <div id="splash" aria-hidden="true"><div id="splash-logo"><img class="dusk-brand-splash" src="assets/dusk-logo-app-icon.png" alt="Dusk" width="120" height="120"></div></div>
   <div id="fx-root"></div>
 
   <div class="m3-organic-bg">
@@ -38,8 +38,7 @@
   <header class="titlebar" id="titlebar">
     <div class="titlebar-drag">
       <div class="app-logo">
-        <svg class="dusk-mark" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 13a8 8 0 0 1 16 0M4 18h16"/></svg>
-        <span class="logo-text" data-no-i18n>Dusk</span>
+        <span class="logo-text" data-no-i18n>DUSK</span>
       </div>
     </div>
     <div class="titlebar-controls">
@@ -425,7 +424,7 @@
       <section class="content-view" id="view-history">
         <div class="view-header">
           <h2>History</h2>
-          <button class="btn-outline-pill btn-encore" id="btn-open-encore"><svg viewBox="0 0 1024 1024" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M512 32Q570 454 992 512Q570 570 512 992Q454 570 32 512Q454 454 512 32Z"/></svg>Muriel Encore</button>
+          <button class="btn-outline-pill btn-encore" id="btn-open-encore"><svg viewBox="0 0 1024 1024" width="14" height="14" fill="currentColor" aria-hidden="true"><path d="M512 32Q570 454 992 512Q570 570 512 992Q454 570 32 512Q454 454 512 32Z"/></svg>Dusk Encore</button>
           <button class="btn-outline-pill" id="btn-clear-history">Clear history</button>
         </div>
         <div class="tracks-list" id="history-tracks-list">
@@ -748,7 +747,7 @@
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                   <div style="display: flex; align-items: center; gap: 8px;">
                     <span class="setting-name" data-i18n>Icon style</span>
-                    <span class="muriel-beta-badge">BETA</span>
+                    <span class="dusk-beta-badge">BETA</span>
                   </div>
                   <span class="setting-hint" data-i18n>Choose the icon pack used across navigation and player controls</span>
                 </div>
@@ -902,7 +901,7 @@
                       <span class="setting-name">Home layout</span>
                     </div>
                     <div class="theme-mode-toggle" id="home-layout-toggle">
-                      <button type="button" class="theme-mode-btn" id="home-layout-riff" data-layout="muriel" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
+                      <button type="button" class="theme-mode-btn" id="home-layout-dusk" data-layout="dusk" style="display: inline-flex; align-items: center; justify-content: center; gap: 6px;">
                         <img src="assets/dusk-icon.svg" width="16" height="16" style="border-radius: 4px; object-fit: contain;" alt="">
                         <span>Dusk</span>
                       </button>
@@ -1110,7 +1109,7 @@
               </div>
 
               <div class="settings-section" data-cat="plugins">
-                <div class="ct-head"><div><div class="settings-section-title">Plugins</div><div class="setting-hint"><span class="plugins-warn">Plugins are JavaScript files with full access to Muriel.</span> Only add plugins you trust. They live in the plugins folder: delete a file and the plugin is gone. Ctrl+Shift+R turns every plugin off.</div></div><div class="ct-actions"><button class="btn-outline-pill" id="btn-plugins-folder">Open folder</button><button class="btn-outline-pill" id="btn-plugins-reload">Reload list</button><button class="btn-pill-primary" id="btn-add-plugin">Add</button></div></div>
+                <div class="ct-head"><div><div class="settings-section-title">Plugins</div><div class="setting-hint"><span class="plugins-warn">Plugins are JavaScript files with full access to Dusk.</span> Only add plugins you trust. They live in the plugins folder: delete a file and the plugin is gone. Ctrl+Shift+R turns every plugin off.</div></div><div class="ct-actions"><button class="btn-outline-pill" id="btn-plugins-folder">Open folder</button><button class="btn-outline-pill" id="btn-plugins-reload">Reload list</button><button class="btn-pill-primary" id="btn-add-plugin">Add</button></div></div>
                 <div class="ct-list m3-group" id="plugins-list"></div>
               </div>
 
@@ -1289,7 +1288,7 @@
               <div class="setting-item-top" style="align-items: center; justify-content: space-between;">
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                   <span class="setting-name">Background</span>
-                  <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);">Image, GIF or video behind the app. Pauses while Muriel is hidden; off in performance mode</span>
+                  <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);">Image, GIF or video behind the app. Pauses while Dusk is hidden; off in performance mode</span>
                 </div>
                 <div style="display: flex; gap: 8px;">
                   <button class="btn-pill-primary" id="btn-choose-custom-bg">Choose file</button>
@@ -1851,7 +1850,7 @@
                   </div>
                   <div style="display: flex; flex-direction: column; min-width: 0;">
                     <span class="setting-name" data-i18n>Restore a backup</span>
-                    <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>Replaces this profile's playlists, favorites, history and settings. Also reads Riff account files (.rfacc)</span>
+                    <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>Replaces this profile's playlists, favorites, history and settings. Also reads Dusk account files (.rfacc)</span>
                   </div>
                 </div>
                 <button class="btn-outline-pill" id="btn-import-account" style="padding: 6px 14px; font-size: calc(12px * var(--font-scale, 1)); flex-shrink: 0;" data-i18n>Import</button>
@@ -1865,7 +1864,7 @@
                   </div>
                   <div style="display: flex; flex-direction: column; min-width: 0;">
                     <span class="setting-name" data-i18n>Export all playlists</span>
-                    <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>Every playlist in one JSON file, readable by Muriel and Riff</span>
+                    <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>Every playlist in one JSON file, readable by Dusk and Dusk</span>
                   </div>
                 </div>
                 <button class="btn-outline-pill" id="btn-export-all-playlists" style="padding: 6px 14px; font-size: calc(12px * var(--font-scale, 1)); flex-shrink: 0;" data-i18n>Export</button>
@@ -1879,7 +1878,7 @@
                   </div>
                   <div style="display: flex; flex-direction: column; min-width: 0;">
                     <span class="setting-name" data-i18n>Import playlists</span>
-                    <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>From a JSON file exported by Muriel or Riff</span>
+                    <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>From a JSON file exported by Dusk or Dusk</span>
                   </div>
                 </div>
                 <button class="btn-outline-pill" id="btn-import-json-playlists" style="padding: 6px 14px; font-size: calc(12px * var(--font-scale, 1)); flex-shrink: 0;" data-i18n>Import</button>
@@ -1905,7 +1904,7 @@
               <div class="setting-item-top" style="align-items: center;">
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                   <span class="setting-name">Free memory in background</span>
-                  <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);">Drops cached images 10 seconds after Muriel is minimized or hidden</span>
+                  <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);">Drops cached images 10 seconds after Dusk is minimized or hidden</span>
                 </div>
                 <button class="effect-switch-btn active" data-adv="trim_bg"><span class="thumb"></span></button>
               </div>
@@ -1972,7 +1971,7 @@
               <div class="setting-item-top">
                 <div style="display: flex; flex-direction: column; gap: 2px;">
                   <span class="setting-name">Stream timeout</span>
-                  <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);">How long a song may sit without loading anything before Muriel gives up on it</span>
+                  <span style="font-size: calc(12px * var(--font-scale, 1)); color: var(--md-sys-color-outline);">How long a song may sit without loading anything before Dusk gives up on it</span>
                 </div>
                 <span class="setting-value" id="val-stream-timeout">12s</span>
               </div>
@@ -2161,7 +2160,7 @@
       <button class="btn-icon-pill" id="btn-playbar-more" title="Download track">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M5 20h14v-2H5v2zM19 9h-4V3H9v6H5l7 7 7-7z"/></svg>
       </button>
-      <button class="btn-icon-pill muriel-share-action-btn" id="btn-playbar-share" title="Share this song" aria-label="Share this song">
+      <button class="btn-icon-pill dusk-share-action-btn" id="btn-playbar-share" title="Share this song" aria-label="Share this song">
         <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 14 20 9 15 4"></polyline><path d="M4 20v-7a4 4 0 0 1 4-4h12"></path></svg>
       </button>
     </div>
@@ -2262,7 +2261,7 @@
       
       <div class="cache-header">
         <h2>Clear Cache</h2>
-        <p>Clear cache and free up your storage, don't do it too often because Muriel will get laggy.</p>
+        <p>Clear cache and free up your storage, don't do it too often because Dusk will get laggy.</p>
       </div>
 
       <div class="cache-stats-container">
@@ -2630,7 +2629,7 @@
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
-      <p id="tools-modal-desc" style="margin: 0; color: var(--md-sys-color-on-surface-variant); font-size: calc(13px * var(--font-scale, 1)); line-height: 1.4;">Muriel needs yt-dlp and ffmpeg to play and save tracks (~400 MB).</p>
+      <p id="tools-modal-desc" style="margin: 0; color: var(--md-sys-color-on-surface-variant); font-size: calc(13px * var(--font-scale, 1)); line-height: 1.4;">Dusk needs yt-dlp and ffmpeg to play and save tracks (~400 MB).</p>
 
       <div class="tools-list" style="display: flex; flex-direction: column; gap: 10px; margin-top: 6px;">
         <div class="tools-row" id="tools-row-ytdlp" style="background: var(--md-sys-color-surface-container); border-radius: var(--md-shape-corner-m); padding: 12px 16px; display: flex; flex-direction: column; gap: 8px;">
@@ -2769,7 +2768,7 @@
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
-          <span>We don't steal anything, and Muriel is open-source. Want to import everything? Use the export files (or log in, if you set that up). Want zero risk? Import a single playlist by link instead.</span>
+          <span>We don't steal anything, and Dusk is open-source. Want to import everything? Use the export files (or log in, if you set that up). Want zero risk? Import a single playlist by link instead.</span>
         </div>
       </div>
       <div class="sp-pane hidden" data-mode="login">
@@ -2795,7 +2794,7 @@
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
-          <span>We don't steal anything, and Muriel is open-source. Want to import everything? Use the export files (or log in, if you set that up). Want zero risk? Import a single playlist by link instead.</span>
+          <span>We don't steal anything, and Dusk is open-source. Want to import everything? Use the export files (or log in, if you set that up). Want zero risk? Import a single playlist by link instead.</span>
         </div>
       </div>
       <div id="spotify-import-progress-wrap" class="hidden" style="margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
@@ -2868,7 +2867,7 @@
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
-          <span>We don't steal anything, and Muriel is open-source. Want to import everything? Use the export files. Want zero risk? Import a single playlist by link instead.</span>
+          <span>We don't steal anything, and Dusk is open-source. Want to import everything? Use the export files. Want zero risk? Import a single playlist by link instead.</span>
         </div>
       </div>
       <div id="apple-import-progress-wrap" class="hidden" style="margin-bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px;">
@@ -2919,7 +2918,7 @@
         </div>
       </div>
       <div class="link-pane sp-pane hidden" data-mode="login">
-        <div id="google-login-hint" style="font-size: calc(13px * var(--font-scale, 1)); color: var(--md-sys-color-on-surface-variant); margin-bottom: 12px; line-height: 1.4;">Log in with your Google account to bring over your liked songs and playlists. The login stays in its own browser storage inside Muriel, for this profile only.</div>
+        <div id="google-login-hint" style="font-size: calc(13px * var(--font-scale, 1)); color: var(--md-sys-color-on-surface-variant); margin-bottom: 12px; line-height: 1.4;">Log in with your Google account to bring over your liked songs and playlists. The login stays in its own browser storage inside Dusk, for this profile only.</div>
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap;">
           <button type="button" class="btn-outline-pill" id="btn-google-login">Log in with Google</button>
           <button type="button" class="btn-outline-pill hidden" id="btn-google-logout">Log out</button>
@@ -2954,7 +2953,7 @@
             <line x1="12" y1="9" x2="12" y2="13"></line>
             <line x1="12" y1="17" x2="12.01" y2="17"></line>
           </svg>
-          <span>Muriel only reads your likes and playlists, and is open-source. Want zero risk? Import a single playlist by link instead.</span>
+          <span>Dusk only reads your likes and playlists, and is open-source. Want zero risk? Import a single playlist by link instead.</span>
         </div>
       </div>
       <!-- outside the panes: errors of the link and of the Google import both show here -->
@@ -3141,7 +3140,7 @@
         </div>
       </div>
 
-      <div class="dl-mode-tabs" id="dl-mode-tabs"><button type="button" class="dl-mode-tab active" data-dl-tab="download" data-i18n>Download file</button><button type="button" class="dl-mode-tab" data-dl-tab="trim"><span data-i18n>Trim best part</span><span class="muriel-beta-badge" style="margin-left:6px;">NEW</span></button></div>
+      <div class="dl-mode-tabs" id="dl-mode-tabs"><button type="button" class="dl-mode-tab active" data-dl-tab="download" data-i18n>Download file</button><button type="button" class="dl-mode-tab" data-dl-tab="trim"><span data-i18n>Trim best part</span><span class="dusk-beta-badge" style="margin-left:6px;">NEW</span></button></div>
 
       <div id="dl-pane-download">
       <div class="download-section">
@@ -3531,7 +3530,7 @@
         <button type="button" class="btn-outline-pill" id="btn-lastfm-disconnect" style="height: 34px; padding: 0 14px; flex-shrink: 0;" data-i18n>Log out</button>
       </div>
       <div id="lastfm-modal-auth-box" style="display: flex; flex-direction: column; gap: 12px;">
-        <div style="font-size: calc(13px * var(--font-scale, 1)); color: var(--md-sys-color-on-surface-variant); line-height: 1.4;" data-i18n>Songs you listen to in this profile show up on your Last.fm page. Muriel keeps the login on this device only.</div>
+        <div style="font-size: calc(13px * var(--font-scale, 1)); color: var(--md-sys-color-on-surface-variant); line-height: 1.4;" data-i18n>Songs you listen to in this profile show up on your Last.fm page. Dusk keeps the login on this device only.</div>
         <button type="button" class="btn-pill-primary" id="btn-lastfm-web-auth" style="width: 100%;" data-i18n>Connect in the browser</button>
         <div style="text-align: center; font-size: calc(11px * var(--font-scale, 1)); color: var(--md-sys-color-outline);" data-i18n>or sign in here</div>
         <input type="text" id="lastfm-input-user" class="pill-text-input" placeholder="Last.fm username" autocomplete="username" autocapitalize="off" spellcheck="false">

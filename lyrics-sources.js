@@ -1,4 +1,4 @@
-// More places to get lyrics from (Riff 43): Genius pages (plain lyrics, picked in Settings → Lyrics source, with
+// More places to get lyrics from (Dusk 43): Genius pages (plain lyrics, picked in Settings → Lyrics source, with
 // lrclib as the fallback either way) and NetEase's word-timed lyrics ("yrc"), which give word-by-word karaoke real
 // timings instead of evenly spread ones. Also lines that carry their own word times as <mm:ss.xx> tags (enhanced
 // LRC). Only text handling lives here: server.js does the fetching, app.js lines the word times up with the lyrics

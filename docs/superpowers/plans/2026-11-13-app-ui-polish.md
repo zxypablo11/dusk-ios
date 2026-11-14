@@ -4,7 +4,7 @@
 
 **Goal:** Make song selection visible immediately and expose useful personal music in the app's empty search and home.
 
-**Architecture:** A small browser/Node UI core owns validated local history and derives playback phases. Existing MurielCore adapters expose canonical track keys and search; mobile presentation subscribes to existing playback events and new completed-search/artist events.
+**Architecture:** A small browser/Node UI core owns validated local history and derives playback phases. Existing DuskCore adapters expose canonical track keys and search; mobile presentation subscribes to existing playback events and new completed-search/artist events.
 
 **Tech Stack:** JavaScript, CSS, existing Node tests, esbuild and Capacitor.
 
@@ -26,7 +26,7 @@ App only. No dependencies or website edits. Preserve user assets and executable-
 
 Files: create `mobile/dusk-ui-core.js`, `test/dusk-ui-core.test.js`; edit `app.js`, `mobile/dusk-mobile.js`, `mobile/build.mjs`.
 
-Interfaces: `DuskUiCore.createHistory(storage)` returns `queries()`, `rememberQuery(query)`, `removeQuery(query)`, `clearQueries()`, `artists()`, `rememberArtist(artist)`. `playbackPhase(key,currentKey,loading,paused)` returns `idle`, `loading`, `paused` or `playing`. MurielCore adds `trackKey(track)`, `refreshTrackSelection()` and `search(query)`. Events `muriel:search` and `muriel:artist` carry only current successful results.
+Interfaces: `DuskUiCore.createHistory(storage)` returns `queries()`, `rememberQuery(query)`, `removeQuery(query)`, `clearQueries()`, `artists()`, `rememberArtist(artist)`. `playbackPhase(key,currentKey,loading,paused)` returns `idle`, `loading`, `paused` or `playing`. DuskCore adds `trackKey(track)`, `refreshTrackSelection()` and `search(query)`. Events `muriel:search` and `muriel:artist` carry only current successful results.
 
 - [x] Write/run failing tests for history validation, bounded deduplication, persistence, profile isolation and playback-state precedence.
 - [x] Implement the core and events/adapters; connect mobile playback markers and the empty-search history.

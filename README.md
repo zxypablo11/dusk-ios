@@ -1,20 +1,27 @@
-# Dusk für iPhone
+# Dusk
 
-Ein dunkler Musikplayer mit ruhiger Oberfläche, drei Hauptbereichen, anpassbaren Themes und automatischer deutscher/englischer Sprachwahl. Technische Grundlage: [Muriel](https://github.com/cloverscripts/riff-muriel) und Riff, MIT-lizenziert. Die ursprüngliche Projektdokumentation liegt unter [docs/UPSTREAM_README.md](docs/UPSTREAM_README.md).
+**A free music player for everyone** — no ads, no account, no subscription.
 
-![Dusk – funktionale Startseite und Einstellungen](design/dusk/app-integrated.jpg)
+Stream from YouTube, YouTube Music and SoundCloud, keep a local library, download for offline listening, lyrics, EQ, themes. Same soul on **Windows**, **iPhone**, **Android**, and in the **browser**.
 
-## Stand
+Dusk is independent and open source ([MIT](LICENSE)). It hosts no music. Use it for private listening and only keep tracks you’re allowed to. Details: [LEGAL.md](LEGAL.md).
 
-Die mobile Oberfläche ist an Player, Suche, Bibliothek und Downloadverwaltung angeschlossen. Lokaler Audioimport, Wiedergabe, Pause, Spulen, Favoriten, Queue und Playlist-Erstellung sind im Browser geprüft. 317 Tests bestanden; einer übersprungen.
+Based on [Muriel](https://github.com/cloverscripts/riff-muriel) by cloverscripts and [Riff](https://github.com/rootscripts/riff) by rootscripts.
 
-**YouTube-Wiedergabe ist noch nicht zuverlässig:** Der getestete Audioabruf wurde mit einer Bot-Anmeldung abgewiesen. Ein funktionierender Gesamtkatalog und YouTube-Offline-Downloads sind nicht zugesichert. Native Hintergrundwiedergabe und Sideloading brauchen einen echten iPhone-Test.
+![Dusk](design/dusk/app-integrated.jpg)
 
-## iPhone-Build
+## Platforms
 
-[Erfolgreicher Mac-Build mit Dusk-IPA](https://github.com/zxypablo11/dusk-ios/actions/runs/42917861317). Die IPA ist unsigniert und muss zur Installation mit einem Sideloading-Werkzeug signiert werden. Unter Actions → „Dusk iPhone test build“ lässt sich manuell ein neuer Build starten. Es gibt keine automatische Veröffentlichung.
+| | |
+|---|---|
+| **Windows** | Native desktop app (Tauri) — sidebar, playbar, volume, Discord presence |
+| **iPhone** | Sideload IPA (Capacitor) |
+| **Android** | Capacitor build |
+| **Browser** | Local preview / shared web UI |
 
-## Lokal starten
+One shared player core; each shell adapts chrome to the device. Architecture and build notes: [DUSK.md](DUSK.md). Older Muriel desktop docs: [docs/UPSTREAM_README.md](docs/UPSTREAM_README.md).
+
+## Try it (browser)
 
 Node 22+:
 
@@ -25,6 +32,24 @@ node mobile/build.mjs
 node mobile/dev-server.mjs
 ```
 
-Vorschau: http://127.0.0.1:5173
+Open http://127.0.0.1:5173 — then `npm test`.
 
-Tests: `npm test`. Architektur, Testumfang, Grenzen und Build-Anleitung: [DUSK.md](DUSK.md).
+## Windows desktop
+
+```sh
+cd desktop
+npm install
+npm run dev          # needs the short dev server
+# release:
+powershell -File scripts/build-windows.ps1
+```
+
+More: [desktop/README.md](desktop/README.md).
+
+## iPhone
+
+Unsigned IPA via Actions or local Mac build — see [DUSK.md](DUSK.md#iphone-build). Sign with your sideloading tool before install.
+
+## What works / what doesn’t
+
+Playback, library, queue, favorites, playlists, themes, DE/EN — in good shape on desktop and in the browser. YouTube can still refuse streams (“bot” / sign-in). Treat catalog streaming and offline YouTube as best-effort until you’ve verified on your machine.

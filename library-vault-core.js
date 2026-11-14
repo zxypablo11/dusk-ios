@@ -9,7 +9,7 @@
     'devsize_favorites',
     'devsize_history',
     'dusk_themes_v1',
-    'muriel_ui_lang',
+    'dusk_ui_lang',
   ];
   const YT_ID = /^[A-Za-z0-9_-]{11}$/;
   const LOCAL_ID = /^local_[A-Za-z0-9_-]{1,64}$/;
@@ -107,7 +107,7 @@
 
   function parseEntry(key, raw) {
     if (typeof raw !== 'string') return null;
-    if (key === 'muriel_ui_lang') {
+    if (key === 'dusk_ui_lang') {
       const lang = clip(raw, 16);
       return lang === 'de' || lang === 'en' || lang === 'system' ? lang : '';
     }

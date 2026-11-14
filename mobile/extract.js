@@ -1,6 +1,6 @@
-// In-app replacement for the parts of yt-dlp Muriel uses: YouTube/YouTube Music search,
+// In-app replacement for the parts of yt-dlp Dusk uses: YouTube/YouTube Music search,
 // SoundCloud search, and resolving a track page to a direct audio URL.
-// All network calls go through globalThis.__murielFetch (native HTTP in the app, dev proxy in a browser).
+// All network calls go through globalThis.__duskFetch (native HTTP in the app, dev proxy in a browser).
 const { Innertube, Platform, Constants } = require('youtubei.js/web');
 
 const DESKTOP_UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36';
@@ -38,7 +38,7 @@ Platform.shim.eval = async (data, env) => {
 let ytPromise = null;
 function yt() {
   if (!ytPromise) {
-    ytPromise = Innertube.create({ generate_session_locally: true, fetch: (...a) => globalThis.__murielFetch(...a) })
+    ytPromise = Innertube.create({ generate_session_locally: true, fetch: (...a) => globalThis.__duskFetch(...a) })
       .catch((e) => { ytPromise = null; throw e; });
   }
   return ytPromise;
@@ -94,7 +94,7 @@ const visitorIsFresh = () => !!visitorId && Date.now() - visitorAt < VISITOR_REF
 async function getVisitorId(force) {
   if (visitorId && (!force || visitorIsFresh())) return visitorId;
   try {
-    const html = await (await globalThis.__murielFetch('https://www.youtube.com/', { headers: { 'User-Agent': VOS_UA, 'Accept-Language': 'en-US' } })).text();
+    const html = await (await globalThis.__duskFetch('https://www.youtube.com/', { headers: { 'User-Agent': VOS_UA, 'Accept-Language': 'en-US' } })).text();
     visitorId = (html.match(/"VISITOR_DATA":"([^"]+)"/) || [])[1] || null;
     visitorAt = Date.now();
     return visitorId;
@@ -114,7 +114,7 @@ async function youtubeHlsAudio(id) {
     if (visitor) headers['X-Goog-Visitor-Id'] = visitor;
     let j;
     try {
-      j = await (await globalThis.__murielFetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', { method: 'POST', headers, body: JSON.stringify(body) })).json();
+      j = await (await globalThis.__duskFetch('https://www.youtube.com/youtubei/v1/player?prettyPrint=false', { method: 'POST', headers, body: JSON.stringify(body) })).json();
     } catch (e) {
       throw streamError('NETWORK', e && e.message ? e.message : 'network error resolving stream');
     }
@@ -126,7 +126,7 @@ async function youtubeHlsAudio(id) {
       if (status === 'LOGIN_REQUIRED' && !force && !visitorIsFresh()) continue;
       throw streamError(classifyYtPlayability(status, reason), reason);
     }
-    const m3u = await (await globalThis.__murielFetch(master, { headers: { 'User-Agent': VOS_UA } })).text();
+    const m3u = await (await globalThis.__duskFetch(master, { headers: { 'User-Agent': VOS_UA } })).text();
     const pick = (itag) => (m3u.match(new RegExp(`#EXT-X-MEDIA:[^\\n]*URI="([^"]+/itag/${itag}/[^"]*)"`)) || [])[1];
     const playlist = pick(234) || pick(233);
     if (!playlist) throw streamError('YT_NO_STREAM', 'no audio rendition');
@@ -146,7 +146,7 @@ async function youtubeAudio(id) {
   let hlsErr = null;
   try { return await youtubeHlsAudio(id); } catch (e) {
     hlsErr = e;
-    console.warn('[muriel] HLS route failed, trying direct', e.message);
+    console.warn('[dusk] HLS route failed, trying direct', e.message);
     if (e && e.code === 'NETWORK') throw e;
   }
   const y = await yt();
@@ -172,10 +172,10 @@ async function youtubeAudio(id) {
 let scClientId = null;
 async function scId(force) {
   if (scClientId && !force) return scClientId;
-  const html = await (await globalThis.__murielFetch('https://soundcloud.com/', { headers: { 'User-Agent': DESKTOP_UA } })).text();
+  const html = await (await globalThis.__duskFetch('https://soundcloud.com/', { headers: { 'User-Agent': DESKTOP_UA } })).text();
   const scripts = [...html.matchAll(/<script[^>]+src="(https:\/\/a-v2\.sndcdn\.com\/assets\/[^"]+\.js)"/g)].map((m) => m[1]).reverse();
   for (const s of scripts) {
-    const m = (await (await globalThis.__murielFetch(s)).text()).match(/client_id\s*[:=]\s*"([a-zA-Z0-9]{20,})"/);
+    const m = (await (await globalThis.__duskFetch(s)).text()).match(/client_id\s*[:=]\s*"([a-zA-Z0-9]{20,})"/);
     if (m) return (scClientId = m[1]);
   }
   throw new Error('SoundCloud client id not found');
@@ -184,7 +184,7 @@ async function scId(force) {
 async function scApi(path) {
   for (const force of [false, true]) {
     const id = await scId(force);
-    const r = await globalThis.__murielFetch(`https://api-v2.soundcloud.com${path}${path.includes('?') ? '&' : '?'}client_id=${id}`, { headers: { 'User-Agent': DESKTOP_UA } });
+    const r = await globalThis.__duskFetch(`https://api-v2.soundcloud.com${path}${path.includes('?') ? '&' : '?'}client_id=${id}`, { headers: { 'User-Agent': DESKTOP_UA } });
     if (r.status === 401 || r.status === 403) continue; // client_id rotated
     if (!r.ok) throw new Error(`SoundCloud ${r.status}`);
     return r.json();
@@ -220,7 +220,7 @@ async function scCanonicalUrl(pageUrl) {
   let u;
   try { u = new URL(String(pageUrl).trim()); } catch (_) { return String(pageUrl); }
   if (u.hostname === 'on.soundcloud.com') {
-    const r = await globalThis.__murielFetch(u.href, { headers: { 'User-Agent': DESKTOP_UA } });
+    const r = await globalThis.__duskFetch(u.href, { headers: { 'User-Agent': DESKTOP_UA } });
     let target = r.url && !/^https?:\/\/on\.soundcloud\.com/.test(r.url) ? r.url : '';
     if (!target) {
       const html = await r.text().catch(() => '');
@@ -234,7 +234,7 @@ async function scCanonicalUrl(pageUrl) {
   return `https://soundcloud.com${u.pathname.replace(/\/+$/, '')}`;
 }
 
-// Which of a track's transcodings Muriel can play, best first. Many tracks no longer have a progressive MP3,
+// Which of a track's transcodings Dusk can play, best first. Many tracks no longer have a progressive MP3,
 // only HLS: plain HLS (MP3 segments, or AAC in fragmented MP4) is downloaded segment by segment and joined;
 // encrypted HLS (ctr-/cbc-encrypted-hls) needs DRM and can't be played outside SoundCloud's own player.
 function scCandidates(list) {

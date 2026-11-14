@@ -4,15 +4,15 @@
   'use strict';
 
   // ---------- pure part ----------
-  const KEY = 'muriel_ui_lang'; // per profile, like every other setting
-  const SNAP = 'muriel_i18n_snap'; // device-wide (profiles-core DEVICE): the open language's words, for a quick start
+  const KEY = 'dusk_ui_lang'; // per profile, like every other setting
+  const SNAP = 'dusk_i18n_snap'; // device-wide (profiles-core DEVICE): the open language's words, for a quick start
   const LANG_RE = /^[a-z]{2,3}(-[A-Za-z0-9]{2,8})?$/;
   const RTL = new Set(['ar', 'he', 'iw', 'fa', 'ur', 'ps', 'sd', 'ug', 'yi', 'dv', 'ckb']);
   const MAX_LEN = 500;
   // names that stay as they are in every language
-  const KEEP = new Set(['dusk', 'muriel', 'encore', 'youtube', 'youtube music', 'soundcloud', 'spotify', 'apple music', 'deezer', 'itunes',
+  const KEEP = new Set(['dusk', 'dusk', 'encore', 'youtube', 'youtube music', 'soundcloud', 'spotify', 'apple music', 'deezer', 'itunes',
     'last.fm', 'lrclib', 'musixmatch', 'genius', 'netease', 'google sans', 'sf pro', 'peerjs', 'yt-dlp', 'ffmpeg', 'github',
-    'android', 'ios', 'iphone', 'windows', 'macos', 'linux', 'electron', 'material 3', 'material you', 'riff', 'muriel encore',
+    'android', 'ios', 'iphone', 'windows', 'macos', 'linux', 'electron', 'material 3', 'material you', 'dusk', 'dusk encore',
     'rootscripts', 'cloverscripts', 'ctrl', 'shift', 'alt', 'esc', 'cmd', 'tab', 'enter']);
   const UNIT = /^[\d\s.,:;/+\-–—×x%°]*(ms|s|sec|min|h|x|db|hz|khz|px|kb|mb|gb|kbps|bpm|fps|lufs)?[\d\s.,:;/+\-–—×x%°]*$/i;
 
@@ -95,7 +95,7 @@
   const staticAttrs = []; // { el, a, src, cur }
   const nodeRec = new WeakMap(); // Text inside [data-i18n] -> { src, cur }
   const attrRec = new WeakMap(); // [data-i18n-attr] element -> { [attr]: { src, cur } }
-  const liveRec = new WeakMap(); // element -> { ref, template, args, cur }: MurielI18n.text / toasts
+  const liveRec = new WeakMap(); // element -> { ref, template, args, cur }: DuskI18n.text / toasts
   const liveRefs = new Set(); // WeakRef(element) of those, to go through on a switch
   const known = new Set(); // words code shows often that the page doesn't have (menus, messages): asked for up front
   const ATTRS = ['title', 'placeholder', 'aria-label'];
@@ -108,7 +108,7 @@
     if (tr === undefined) want(key);
     return tr;
   }
-  // Surface name is Dusk; keep upstream "Muriel" only in marked attribution (data-no-i18n).
+  // Surface name is Dusk; keep upstream "Dusk" only in marked attribution (data-no-i18n).
   function brand(s) {
     if (typeof s !== 'string' || s.indexOf('uriel') === -1) return s;
     return s.replace(/\bMuriel\b/g, 'Dusk');
@@ -251,7 +251,7 @@
     applyStatics(visibleFirst);
     doAll(document.body);
     applyLive();
-    try { root.dispatchEvent(new CustomEvent('muriel:i18n', { detail: { lang } })); } catch (e) {}
+    try { root.dispatchEvent(new CustomEvent('dusk:i18n', { detail: { lang } })); } catch (e) {}
   }
 
   // ---------- watching the page (other languages only) ----------
@@ -429,7 +429,7 @@
   // ---------- start: before app.js, so the first paint is already in the right language ----------
   setRootAttrs();
   capture();
-  // English also needs a pass so leftover "Muriel" copy reads as Dusk.
+  // English also needs a pass so leftover "Dusk" copy reads as Dusk.
   applyStatics(false);
   if (lang !== 'en') {
     loadSnap();
@@ -439,7 +439,7 @@
 
   // the getter is defined, not copied: Object.assign would read it once and freeze the language at startup, so
   // the language picker thought English was still on and ignored picking it again (#20)
-  root.MurielI18n = Object.defineProperty(Object.assign({}, core, {
+  root.DuskI18n = Object.defineProperty(Object.assign({}, core, {
     T, Tf, Tm, Th, text, setLang, connect, ready,
     known: (list) => { for (const k of list || []) if (typeof k === 'string') known.add(k); },
     refresh: () => refresh(false),
@@ -447,6 +447,6 @@
     strings: () => [...new Set(statics.filter(Boolean).map((r) => norm(r.src)).concat(staticAttrs.filter(Boolean).map((r) => norm(r.src)))
       .map((s) => { const n = numbered(s); return n ? n.template : s; }))].filter(translatable),
   }), 'lang', { get: () => lang, enumerable: true });
-  Object.defineProperty(root.MurielI18n, 'deviceLanguage', { get: () => resolveLanguage('system', deviceLanguages()), enumerable: true });
-  Object.defineProperty(root.MurielI18n, 'preference', { get: () => preference, enumerable: true });
+  Object.defineProperty(root.DuskI18n, 'deviceLanguage', { get: () => resolveLanguage('system', deviceLanguages()), enumerable: true });
+  Object.defineProperty(root.DuskI18n, 'preference', { get: () => preference, enumerable: true });
 })(typeof window !== 'undefined' ? window : globalThis);

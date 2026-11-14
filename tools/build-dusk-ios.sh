@@ -1,15 +1,19 @@
 #!/usr/bin/env bash
-# Build an unsigned, private test artifact. Sideloading supplies the signing identity.
+# Build an unsigned test artifact. Sideloading supplies the signing identity.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ "$(uname -s)" != Darwin ]]; then
   echo 'Dusk iOS builds require macOS with Xcode.' >&2
   exit 1
 fi
-if [[ ! "${DUSK_BUNDLE_ID:-}" =~ ^[A-Za-z][A-Za-z0-9-]*(\.[A-Za-z][A-Za-z0-9-]*){2,}$ ]] || [[ "$DUSK_BUNDLE_ID" == 'io.github.cloverscripts.muriel' ]]; then
+if [[ ! "${DUSK_BUNDLE_ID:-}" =~ ^[A-Za-z][A-Za-z0-9-]*(\.[A-Za-z][A-Za-z0-9-]*){2,}$ ]] || [[ "$DUSK_BUNDLE_ID" == 'io.github.cloverscripts.dusk' ]]; then
   echo 'Set DUSK_BUNDLE_ID to your own reverse-DNS app identifier.' >&2
   exit 1
 fi
+mkdir -p build
+swiftc -swift-version 5 ios/App/App/DuskStreamProtocol.swift ios/App/App/DuskStreamProxy.swift tools/test-dusk-stream.swift -o build/dusk-stream-tests
+build/dusk-stream-tests
+node --test test/stream-playback.test.js test/youtube-opus.test.js test/soundcloud-hls.test.js test/background-audio.test.js test/stream-proxy-17.test.js
 node tools/build-locales.mjs
 node mobile/build.mjs
 node node_modules/@capacitor/cli/bin/capacitor sync ios

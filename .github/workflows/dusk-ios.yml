@@ -11,7 +11,7 @@ permissions:
   contents: read
 jobs:
   ipa:
-    runs-on: macos-15
+    runs-on: macos-15-intel
     timeout-minutes: 20
     env:
       ELECTRON_SKIP_BINARY_DOWNLOAD: '1'
@@ -25,6 +25,8 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci --no-audit --no-fund
+      - name: Verify mobile UI behavior
+        run: node --test test/dusk-ui-core.test.js test/dusk-ui-integration.test.js test/dusk-preferences.test.js test/i18n.test.js
       - name: Build unsigned Dusk IPA
         run: bash tools/build-dusk-ios.sh
       - uses: actions/upload-artifact@v4

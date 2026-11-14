@@ -79,6 +79,7 @@ class MurielBridgeViewController: CAPBridgeViewController {
         bridge?.registerPluginInstance(MurielLiveActivityPlugin())
         bridge?.registerPluginInstance(MurielAudioSessionPlugin())
         bridge?.registerPluginInstance(DuskLibraryVaultPlugin())
+        bridge?.registerPluginInstance(DuskStreamPlugin())
     }
 }
 

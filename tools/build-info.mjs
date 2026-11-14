@@ -15,7 +15,7 @@ export function buildInfo(channel = '') {
   };
 }
 
-export const buildInfoScript = (channel) => `window.MURIEL_BUILD = ${JSON.stringify(buildInfo(channel))};\n`;
+export const buildInfoScript = (channel) => `window.DUSK_BUILD = ${JSON.stringify(buildInfo(channel))};\n`;
 
 if (process.argv[1] && process.argv[1].endsWith('build-info.mjs')) {
   const [out = 'build-info.js', channel = ''] = process.argv.slice(2);

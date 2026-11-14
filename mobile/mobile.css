@@ -1,4 +1,4 @@
-/* ---- Muriel iOS layout ----
+/* ---- Dusk iOS layout ----
    Top: logo + search. Bottom: tab bar (the desktop rail, turned sideways) with a mini player above it.
    Tapping the mini player opens the now-playing sheet (the desktop drawer, full screen) and the
    player bar expands into full transport controls at the bottom of that sheet. */
@@ -99,7 +99,7 @@ html.is-mobile .rail-divider,
 html.is-mobile #btn-toggle-presets-drawer { display: none !important; }
 html.is-mobile .nav-item,
 html.is-mobile .rail-icon-btn { width: 52px !important; height: 44px !important; border-radius: 22px !important; }
-/* Riff's rail turned sideways: the active tab's icon sits in a filled primary pill (in on-primary),
+/* Dusk's rail turned sideways: the active tab's icon sits in a filled primary pill (in on-primary),
    the same spring press as the desktop rail */
 html.is-mobile .nav-item.active { background: transparent !important; }
 html.is-mobile .sidebar .nav-indicator { width: 44px !important; height: 32px !important; border-radius: 16px !important; }
@@ -441,7 +441,7 @@ html.is-mobile .artist-tracks-title { font-size: 20px; }
 html.is-mobile :is(.artist-albums-grid, .saved-albums-grid) { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
 html.is-mobile .artist-bio-modal-body { max-height: calc(100vh - 380px - var(--safe-top) - var(--safe-bottom)); }
 
-/* ---------- Riff 43 library pages on phones: Albums tab, sort menu, Spotify-style home ---------- */
+/* ---------- Dusk 43 library pages on phones: Albums tab, sort menu, Spotify-style home ---------- */
 /* a tab switched off in Settings (Albums, My files) leaves no gap in the tab bar */
 html.is-mobile .nav-item.nav-collapsed { display: none !important; }
 /* seven tabs (Albums on) still fit a 360px wide phone */
@@ -470,7 +470,7 @@ html.is-mobile .fav-artist-name { max-width: 112px; }
 html.is-mobile .fav-artist-hover { display: none !important; }
 html.is-mobile .daily-mix-feedback { width: 100%; }
 
-/* Riff 42.3 home hero: title on the left, refresh/play on the right instead of stacked on top of each other */
+/* Dusk 42.3 home hero: title on the left, refresh/play on the right instead of stacked on top of each other */
 html.is-mobile .home-pane-header { justify-content: space-between; gap: 8px; padding: 0 12px; }
 html.is-mobile .home-pane-header .my-wave-actions { position: static; transform: none; flex: none; }
 html.is-mobile .home-pane-label { min-width: 0; padding: 6px 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -481,20 +481,20 @@ html.is-mobile :is(.bg-mesh-layer, #mesh-gradient, .shape-pill, .shape-egg, .sha
 html.is-mobile *, html.is-mobile *::before, html.is-mobile *::after { -webkit-backdrop-filter: none !important; backdrop-filter: none !important; }
 html.is-mobile #visualizer-container, html.is-mobile #mini-visualizer { display: none !important; }
 
-/* Riff 42.3 gave the Now Playing header min-height:0, so in the sheet's column it shrank to a few px and the
+/* Dusk 42.3 gave the Now Playing header min-height:0, so in the sheet's column it shrank to a few px and the
    lyrics tools (edit / sync / translate / fullscreen / Word) got clipped under the tabs */
 html.is-mobile .right-panel-header { flex-shrink: 0 !important; min-height: max-content !important; margin-bottom: 0 !important; }
 /* the animated M3 cover is desktop-only (see m3cEnabled in app.js) */
 html.is-mobile .setting-item:has(#toggle-m3-cover) { display: none !important; }
-/* the download folder is fixed on phones (Files → Muriel → Downloads on iPhone, Music/Muriel on Android):
+/* the download folder is fixed on phones (Files → Dusk → Downloads on iPhone, Music/Dusk on Android):
    Change and Reset did nothing there */
 html.is-mobile #btn-change-download-folder, html.is-mobile #btn-reset-download-folder { display: none !important; }
-/* mini player cover: Muriel's 48px square inside the bar, not Riff 42.3's 72px one that pokes out above it */
+/* mini player cover: Dusk's 48px square inside the bar, not Dusk 42.3's 72px one that pokes out above it */
 html.is-mobile #playbar-artwork-wrapper, html.is-mobile #m3c-wrap { width: 48px !important; height: 48px !important; margin-top: 0 !important; }
 html.is-mobile #playbar-artwork-wrapper { overflow: hidden !important; border-radius: var(--md-shape-corner-s); }
 /* update banner sits just under the status bar on phones */
 html.is-mobile .update-banner { top: calc(var(--safe-top) + 10px); width: calc(100vw - 24px); }
-/* Muriel Encore: keep the story clear of the notch and the home bar */
+/* Dusk Encore: keep the story clear of the notch and the home bar */
 html.is-mobile .enc-bar { top: calc(var(--safe-top) + 10px); }
 html.is-mobile .enc-close { top: calc(var(--safe-top) + 2px); }
 html.is-mobile .enc-slide { padding-top: calc(var(--safe-top) + 70px); padding-bottom: calc(var(--safe-bottom) + 40px); }
@@ -560,12 +560,12 @@ html.is-mobile .track-row:nth-child(n+25) { content-visibility: visible; contain
 
 /* phones draw no backdrop blur, so floating toasts and the song menu need a solid background or the list
    underneath shows through their text (also when the UI transparency slider is turned down) */
-html.is-mobile .muriel-toast,
+html.is-mobile .dusk-toast,
 html.is-mobile .m3-dropdown-menu,
 html.is-mobile .track-context-menu { background: var(--md-sys-color-surface-container-highest-solid) !important; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35); }
 /* a long message wraps instead of being cut off at the screen edge */
-html.is-mobile .muriel-toast { min-width: 0; max-width: 100%; border-radius: 22px; }
-html.is-mobile .muriel-toast .toast-text { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
+html.is-mobile .dusk-toast { min-width: 0; max-width: 100%; border-radius: 22px; }
+html.is-mobile .dusk-toast .toast-text { white-space: normal; overflow-wrap: anywhere; line-height: 1.35; }
 
 /* phones play through a plain <audio> element (no Web Audio graph, see mobile-ui.js), so the Enhance,
    Effects and EQ tabs had controls that did nothing; Tempo (speed/pitch) and Sleep still work */
@@ -584,7 +584,7 @@ html.is-mobile .audio-panel[data-audio-panel="eq"] { display: none !important; }
   html.is-mobile #right-panel .lyric-line.active .lyric-word { color: rgba(255, 255, 255, .38); }
 }
 
-/* ---------- Riff 43 player & look on phones ----------
+/* ---------- Dusk 43 player & look on phones ----------
    no Web Audio graph here (see mobile-ui.js), so the playbar visualizer settings had nothing to draw with;
    the titlebar is the phone's top bar; the download's trim needs ffmpeg, which phones don't have ("Trim best part"
    still works: it only skips through the song while it plays); there is no pointer to hover the karaoke top edge */

@@ -3,7 +3,7 @@
   const C = window.DuskThemeCore;
   if (!C) return;
   const $ = id => document.getElementById(id);
-  const I = window.MurielI18n;
+  const I = window.DuskI18n;
   let loaded;
   try { loaded = C.readState(localStorage.getItem(C.KEY)); }
   catch (_) { loaded = { state: C.defaultState(), recovered: true }; }
@@ -70,7 +70,7 @@
     state = next;
     reapply();
     if (initialized) render();
-    window.MurielCore?.refreshTheme();
+    window.DuskCore?.refreshTheme();
   }
   function report(error) { status(error.message || 'Could not save the theme. Check device storage.'); }
   function action(fn) { try { fn(); } catch (e) { report(e); } }
@@ -222,11 +222,11 @@
         if (state.enabled) action(() => commit({ ...state, active: C.validate({ ...state.active, [field]: Number(e.target.value) }) }));
       });
     }
-    window.addEventListener('muriel:i18n', render);
+    window.addEventListener('dusk:i18n', render);
     render(); reapply();
     if (loaded.recovered) status('Saved appearance could not be read. Graphite is active; the original data has been kept.');
   }
   window.DuskThemes = { reapply };
   reapply();
-  if (window.MurielCore) init(); else window.addEventListener('muriel:ready', init, { once: true });
+  if (window.DuskCore) init(); else window.addEventListener('dusk:ready', init, { once: true });
 })();

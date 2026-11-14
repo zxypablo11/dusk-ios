@@ -1,4 +1,4 @@
-// "Trim best part" (Riff 43, in the Download dialog): keep only part of a song. The kept part is saved per song and
+// "Trim best part" (Dusk 43, in the Download dialog): keep only part of a song. The kept part is saved per song and
 // playback skips the rest (on phones too: it is only seeking, no ffmpeg). On computers the same start and end also
 // fill the download's trim fields. The waveform drawn behind the handles comes from the song's own audio when it
 // is on the device, otherwise a stand-in shape. No DOM here: app.js draws it, test/track-trim.test.js runs this.

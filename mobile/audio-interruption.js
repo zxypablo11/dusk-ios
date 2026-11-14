@@ -1,5 +1,5 @@
 // iPhone: play again once another app's sound is over (#26). A call, Siri or a video in another app pauses
-// Muriel; iOS then says when it's done and whether to start again, but by then Muriel sits paused in the
+// Dusk; iOS then says when it's done and whether to start again, but by then Dusk sits paused in the
 // background and WebKit didn't start the song again. The app (MurielAudioSessionPlugin in
 // ios/App/App/AppDelegate.swift) passes on the start and end of each interruption, and this plays the song
 // again when it was playing and nobody paused it meanwhile.
@@ -9,7 +9,7 @@ const { wasPlayingAtInterruption, resumeAfterInterruption } = require('../now-pl
 module.exports = function audioInterruption() {
   if (Capacitor.getPlatform() !== 'ios') return;
   const plugin = registerPlugin('MurielAudioSession');
-  const core = () => window.MurielCore;
+  const core = () => window.DuskCore;
   let lastPlayingAt = 0;
   let wasPlaying = false;
 
@@ -33,5 +33,5 @@ module.exports = function audioInterruption() {
       else c.togglePlay();
     });
   }
-  if (window.MurielCore) hook(); else window.addEventListener('muriel:ready', hook, { once: true });
+  if (window.DuskCore) hook(); else window.addEventListener('dusk:ready', hook, { once: true });
 };

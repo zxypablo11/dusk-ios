@@ -37,7 +37,7 @@ function languageApp({ language = 'de-AT', stored, native } = {}) {
 }
 
 test('offline startup, switching and a later system language change never call translation endpoints', async () => {
-  const app = languageApp(); const i = app.ctx.MurielI18n;
+  const app = languageApp(); const i = app.ctx.DuskI18n;
   assert.equal(i.preference, 'system'); assert.equal(i.lang, 'de');
   assert.equal(i.T('Settings'), 'Einstellungen');
   await i.connect('http://127.0.0.1:12345');
@@ -54,11 +54,11 @@ test('offline startup, switching and a later system language change never call t
 
 test('native app language takes priority, and a storage error leaves the previous choice active', async () => {
   const app = languageApp({ language: 'en-US', native: ['de-DE'] });
-  assert.equal(app.ctx.MurielI18n.lang, 'de');
+  assert.equal(app.ctx.DuskI18n.lang, 'de');
   app.ctx.localStorage.setItem = () => { throw Error('quota'); };
-  assert.equal(await app.ctx.MurielI18n.setLang('en'), false);
-  assert.equal(app.ctx.MurielI18n.preference, 'system');
-  assert.equal(app.ctx.MurielI18n.lang, 'de');
+  assert.equal(await app.ctx.DuskI18n.setLang('en'), false);
+  assert.equal(app.ctx.DuskI18n.preference, 'system');
+  assert.equal(app.ctx.DuskI18n.lang, 'de');
 });
 
 test('locale placeholders are intact; Dusk and primary music terms are reviewed', () => {

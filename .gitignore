@@ -25,6 +25,7 @@ build/
 .claude/
 .cursor/
 .superpowers/
+docs/superpowers/
 
 # Accidental Windows type-name files
 System.Drawing.*

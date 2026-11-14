@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Dusk",
+  "productName": "Dusk Music",
   "version": "0.1.0",
   "identifier": "io.github.zxypablo11.dusk",
   "build": {
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Dusk",
+        "title": "Dusk Music",
         "width": 1200,
         "height": 800,
         "minWidth": 900,

@@ -1,29 +1,29 @@
-# Dusk
+# Dusk Music
 
-**A free music player for everyone** — no ads, no account, no subscription.
+**A free music player for everyone.**
 
-Stream from YouTube, YouTube Music and SoundCloud, keep a local library, download for offline listening, lyrics, EQ, themes. Same soul on **Windows**, **iPhone**, **Android**, and in the **browser**.
+No ads. No account. No subscription. Stream from YouTube, YouTube Music, and SoundCloud, keep a local library, download for offline listening, and enjoy lyrics, EQ, and themes — on **Windows**, **iPhone**, **Android**, and in the **browser**.
 
-Dusk is independent and open source ([MIT](LICENSE)). It hosts no music. Use it for private listening and only keep tracks you’re allowed to. Details: [LEGAL.md](LEGAL.md).
+Dusk Music is independent and open source ([MIT](LICENSE)). It does not host music. Use it for private listening, and only keep tracks you have the right to keep. See [LEGAL.md](LEGAL.md).
 
-Based on [Muriel](https://github.com/cloverscripts/riff-muriel) by cloverscripts and [Riff](https://github.com/rootscripts/riff) by rootscripts.
+Built on [Muriel](https://github.com/cloverscripts/riff-muriel) and [Riff](https://github.com/rootscripts/riff).
 
-![Dusk](design/dusk/app-integrated.jpg)
+![Dusk Music](design/dusk/app-integrated.jpg)
 
 ## Platforms
 
-| | |
-|---|---|
-| **Windows** | Native desktop app (Tauri) — sidebar, playbar, volume, Discord presence |
-| **iPhone** | Sideload IPA (Capacitor) |
-| **Android** | Capacitor build |
-| **Browser** | Local preview / shared web UI |
+| Platform | How |
+|----------|-----|
+| **Windows** | Desktop app (Tauri) — sidebar, playbar, volume, optional Discord presence |
+| **iPhone** | Sideload the IPA (Capacitor) |
+| **Android** | Capacitor APK build |
+| **Browser** | Local web preview of the shared UI |
 
-One shared player core; each shell adapts chrome to the device. Architecture and build notes: [DUSK.md](DUSK.md). Older Muriel desktop docs: [docs/UPSTREAM_README.md](docs/UPSTREAM_README.md).
+One player core; each shell fits the device. Technical notes: [DUSK.md](DUSK.md).
 
-## Try it (browser)
+## Quick start (browser)
 
-Node 22+:
+Requires Node.js 22+.
 
 ```sh
 npm ci
@@ -32,24 +32,30 @@ node mobile/build.mjs
 node mobile/dev-server.mjs
 ```
 
-Open http://127.0.0.1:5173 — then `npm test`.
+Open http://127.0.0.1:5173  
+Run tests with `npm test`.
 
 ## Windows desktop
 
 ```sh
 cd desktop
 npm install
-npm run dev          # needs the short dev server
-# release:
+npm run dev
+```
+
+Release build:
+
+```powershell
+cd desktop
 powershell -File scripts/build-windows.ps1
 ```
 
-More: [desktop/README.md](desktop/README.md).
+Details: [desktop/README.md](desktop/README.md).
 
 ## iPhone
 
-Unsigned IPA via Actions or local Mac build — see [DUSK.md](DUSK.md#iphone-build). Sign with your sideloading tool before install.
+Build an unsigned IPA (Actions or a Mac with Xcode), then sign it with your sideloading tool. See [DUSK.md](DUSK.md#phone-ios--android).
 
-## What works / what doesn’t
+## Notes
 
-Playback, library, queue, favorites, playlists, themes, DE/EN — in good shape on desktop and in the browser. YouTube can still refuse streams (“bot” / sign-in). Treat catalog streaming and offline YouTube as best-effort until you’ve verified on your machine.
+Local files and confirmed streams work well. YouTube may still block some requests (“bot” / sign-in). Treat catalog streaming and offline YouTube as best-effort until you verify on your machine.

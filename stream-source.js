@@ -1,5 +1,5 @@
 'use strict';
-// #17: how Muriel hands a YouTube media URL to the desktop audio element. yt-dlp resolves the URL with a
+// #17: how Dusk hands a YouTube media URL to the desktop audio element. yt-dlp resolves the URL with a
 // player client (android, tv, ...) and YouTube serves it only to requests that look like that client;
 // Chromium fetching it with its own User-Agent/Origin gets a refusal the <audio> element reports as
 // "MEDIA_ELEMENT_ERROR: Format error" (code 4). The same yt-dlp run also prints the request headers it
@@ -37,7 +37,7 @@ function upstreamHeaders(reqHeaders, ytHeaders, opts) {
       if (YT_HEADERS.has(key) && typeof v === 'string') out[key] = v;
     }
   }
-  // googlevideo answers web_embedded streams with an empty 403 unless they come from YouTube (Riff 44)
+  // googlevideo answers web_embedded streams with an empty 403 unless they come from YouTube (Dusk 44)
   if (opts && opts.googlevideo) {
     if (!out.origin) out.origin = 'https://www.youtube.com';
     if (!out.referer) out.referer = 'https://www.youtube.com/';

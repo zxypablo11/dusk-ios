@@ -1,0 +1,21 @@
+{
+  "name": "dusk-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dusk for Windows — Tauri shell around the shared Dusk web UI",
+  "scripts": {
+    "build:www": "node ../mobile/build.mjs && node prepare-www.mjs",
+    "dev:www": "node ../mobile/build.mjs && node prepare-www.mjs",
+    "tauri": "tauri",
+    "dev": "npm run build:www && tauri dev",
+    "build": "npm run build:www && tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2",
+    "@tauri-apps/plugin-dialog": "^2",
+    "@tauri-apps/plugin-opener": "^2"
+  }
+}

@@ -623,7 +623,7 @@ html.dusk-mobile #right-panel {
   gap: 0 !important;
   overflow-y: auto !important;
 }
-/* Dusk player-head already closes the sheet — drop Muriel's grabber pill. */
+/* Dusk player-head already closes the sheet — drop Dusk's grabber pill. */
 html.dusk-mobile #right-panel::before { display: none !important; }
 html.dusk-mobile #right-panel :is(.drawer-tabs, #btn-right-panel-art, #vinyl-overlay) { display: none !important; }
 .dusk-player-head {
@@ -790,7 +790,7 @@ html.dusk-mobile #scrubber-track { display: none !important; }
 .dusk-playback-status { margin: 0; font-size: calc(12px * var(--dusk-scale)); line-height: 1.45; color: var(--dusk-quiet); }
 .dusk-playback-status:empty { display: none; }
 
-/* Settings: typography list on OLED — no Muriel card stacks / icon circles / soft pills. */
+/* Settings: typography list on OLED — no Dusk card stacks / icon circles / soft pills. */
 html.dusk-mobile #view-settings > .section-title,
 html.dusk-mobile #view-settings .settings-view > .section-title,
 html.dusk-mobile #settings-nav { display: none !important; }
@@ -906,7 +906,7 @@ html.dusk-mobile #view-settings :is(.setting-hint, .dusk-hint, #offline-library-
   font-size: calc(12px * var(--dusk-scale)) !important;
   line-height: 1.5 !important;
 }
-/* Drop Muriel's circular icon badges inside settings rows */
+/* Drop Dusk's circular icon badges inside settings rows */
 html.dusk-mobile #view-settings .setting-item-top > div > div[style*="border-radius: 50%"],
 html.dusk-mobile #view-settings .setting-item-top div[style*="border-radius: 50%"][style*="width: 32px"] {
   display: none !important;

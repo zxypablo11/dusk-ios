@@ -78,7 +78,7 @@ test('loading subscribers see the new selection before audio preparation complet
   const state={currentTrack:{id:'old'},trackLoading:false,loadToken:1};
   const track={id:'new'}, events=new EventTarget();
   let observed;
-  events.addEventListener('muriel:loading',()=>{observed=state.currentTrack.id;});
+  events.addEventListener('dusk:loading',()=>{observed=state.currentTrack.id;});
   vm.runInNewContext(setter+selection,{state,track,context:null,startIndex:-1,advancing:false,SKIP_CONTEXTS:new Set(),Event,window:events,AbortController,emitPluginEvent(){},onTrackAudioTrackChange(){}});
   assert.equal(observed,'new');
 });

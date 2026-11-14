@@ -6,7 +6,7 @@ if [[ "$(uname -s)" != Darwin ]]; then
   echo 'Dusk iOS builds require macOS with Xcode.' >&2
   exit 1
 fi
-if [[ ! "${DUSK_BUNDLE_ID:-}" =~ ^[A-Za-z][A-Za-z0-9-]*(\.[A-Za-z][A-Za-z0-9-]*){2,}$ ]] || [[ "$DUSK_BUNDLE_ID" == 'io.github.cloverscripts.muriel' ]]; then
+if [[ ! "${DUSK_BUNDLE_ID:-}" =~ ^[A-Za-z][A-Za-z0-9-]*(\.[A-Za-z][A-Za-z0-9-]*){2,}$ ]] || [[ "$DUSK_BUNDLE_ID" == 'io.github.cloverscripts.dusk' ]]; then
   echo 'Set DUSK_BUNDLE_ID to your own reverse-DNS app identifier.' >&2
   exit 1
 fi

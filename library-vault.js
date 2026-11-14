@@ -7,11 +7,11 @@
   const META = 'dusk_vault_meta_v1';
   const LS_VAULT = 'dusk_library_vault_v1';
   const WATCH = new Set(V.KEYS);
-  const I18n = () => window.MurielI18n || (() => {
+  const I18n = () => window.DuskI18n || (() => {
     const f = (s, ...a) => String(s).replace(/\{(\d)\}/g, (_, i) => (a[i] != null ? a[i] : ''));
     return { T: (s) => s, Tf: f, Tm: f, Th: f, text: (el, s, ...a) => { if (el) el.textContent = f(s, ...a); } };
   })();
-  const toast = (m, kind) => { try { window.MurielCore && window.MurielCore.toast(m, kind || 'info'); } catch (e) {} };
+  const toast = (m, kind) => { try { window.DuskCore && window.DuskCore.toast(m, kind || 'info'); } catch (e) {} };
   const $ = (id) => document.getElementById(id);
 
   let core = null;
@@ -98,7 +98,7 @@
     if (saving || applying) return null;
     saving = true;
     try {
-      const me = window.MurielProfiles ? window.MurielProfiles.current() : { name: '' };
+      const me = window.DuskProfiles ? window.DuskProfiles.current() : { name: '' };
       const vault = V.makeVault(ownEntries(), { profileName: me && me.name, appVersion: await appVersion() });
       const text = JSON.stringify(vault);
       const r = await writeVaultText(text);
@@ -180,7 +180,7 @@
   }
 
   function hook() {
-    core = window.MurielCore;
+    core = window.DuskCore;
     const on = (id, fn) => { const b = $(id); if (b) b.addEventListener('click', fn); };
     on('btn-device-vault-save', () => persist({ toast: true }));
     on('btn-device-vault-restore', () => restoreFromDevice({ silent: false }));
@@ -194,6 +194,6 @@
     });
   }
 
-  if (window.MurielCore) hook();
-  else window.addEventListener('muriel:ready', hook, { once: true });
+  if (window.DuskCore) hook();
+  else window.addEventListener('dusk:ready', hook, { once: true });
 })();

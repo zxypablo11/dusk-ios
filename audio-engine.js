@@ -2,7 +2,7 @@
 (function (global) {
   'use strict';
 
-  class MurielAudioEngine {
+  class DuskAudioEngine {
     constructor() {
       this.ctx = null;
       this.mediaSource = null;
@@ -151,7 +151,7 @@
           this.hqAir.frequency.value = 9000;
 
           this.hqSaturation = this.ctx.createWaveShaper();
-          this.hqSaturation.oversample = '2x'; // 4x cost noticeably more CPU for no audible difference (Riff 43)
+          this.hqSaturation.oversample = '2x'; // 4x cost noticeably more CPU for no audible difference (Dusk 43)
 
           this.hqLimiter = this.ctx.createDynamicsCompressor();
           this.hqLimiter.threshold.value = -1;
@@ -516,8 +516,16 @@
 
     _applyMasterVolume() {
       const vol = this.isMuted ? 0 : this.volume;
+      const level = vol * (this.audioSettings && Number.isFinite(this.audioSettings.volume) ? this.audioSettings.volume : 1);
       if (this.masterGain) {
-        this.masterGain.gain.value = vol * this.audioSettings.volume;
+        this.masterGain.gain.value = level;
+      }
+      // Keep element.volume in sync: if MediaElementSource failed (or was never built), this is the audible path.
+      if (this._attachedElement) {
+        try {
+          this._attachedElement.muted = !!this.isMuted;
+          this._attachedElement.volume = Math.max(0, Math.min(1, this.isMuted ? 0 : level));
+        } catch (e) {}
       }
     }
 
@@ -826,6 +834,6 @@
     }
   }
 
-  global.MurielAudioEngine = MurielAudioEngine;
+  global.DuskAudioEngine = DuskAudioEngine;
 
 })(typeof window !== 'undefined' ? window : globalThis);

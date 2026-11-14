@@ -1,9 +1,9 @@
-// Lyrics on the iPhone lock screen and in the Dynamic Island (a Live Activity, drawn by the MurielWidgets
+// Lyrics on the iPhone lock screen and in the Dynamic Island (a Live Activity, drawn by the DuskWidgets
 // extension). This sends the song, its synced lyrics and every play/pause/seek to the native side
 // (ios/App/App/LyricsLiveActivity.swift), which times the lines itself while the app is in the background.
 const { Capacitor, registerPlugin } = require('@capacitor/core');
 
-const KEY = 'muriel_live_activity';
+const KEY = 'dusk_live_activity';
 
 module.exports = function liveActivity() {
   if (Capacitor.getPlatform() !== 'ios') return;
@@ -11,7 +11,7 @@ module.exports = function liveActivity() {
   const enabled = () => localStorage.getItem(KEY) !== '0';
   const send = (method, data) => { if (enabled()) plugin[method](data).catch(() => {}); };
 
-  const core = () => window.MurielCore;
+  const core = () => window.DuskCore;
   const keyOf = (t) => (t ? `${t.platform || ''}:${t.id || ''}:${t.title || ''}` : '');
   let lastSync = 0;
 
@@ -43,10 +43,10 @@ module.exports = function liveActivity() {
   function hook() {
     const a = core() && core().audio;
     if (!a) return;
-    window.addEventListener('muriel:track', () => sendTrack());
-    window.addEventListener('muriel:lyrics', () => sendLyrics());
+    window.addEventListener('dusk:track', () => sendTrack());
+    window.addEventListener('dusk:lyrics', () => sendLyrics());
     ['playing', 'pause', 'seeked', 'ratechange', 'ended', 'durationchange'].forEach((ev) => a.addEventListener(ev, sendPlayback));
-    window.addEventListener('muriel:modes', sendPlayback);
+    window.addEventListener('dusk:modes', sendPlayback);
     // the buttons in the Dynamic Island (iOS 17+)
     plugin.addListener('action', ({ action } = {}) => {
       const c = core();
@@ -59,10 +59,10 @@ module.exports = function liveActivity() {
     // the native clock drifts a little from the audio over a long song; line it up now and then
     a.addEventListener('timeupdate', () => { if (!a.paused && Date.now() - lastSync > 15000) sendPlayback(); });
   }
-  if (window.MurielCore) hook(); else window.addEventListener('muriel:ready', hook, { once: true });
+  if (window.DuskCore) hook(); else window.addEventListener('dusk:ready', hook, { once: true });
 
   // for the switch in Settings (mobile-ui.js)
-  window.MurielLiveActivity = {
+  window.DuskLiveActivity = {
     enabled,
     available: () => plugin.isAvailable().then((r) => !!(r && r.available)).catch(() => false),
     setEnabled(on) {

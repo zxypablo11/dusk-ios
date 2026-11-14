@@ -1,11 +1,11 @@
-/* Dusk's mobile presentation. Playback and library mutations stay in MurielCore. */
+/* Dusk's mobile presentation. Playback and library mutations stay in DuskCore. */
 (function () {
   'use strict';
   const root = document.documentElement;
   if (!root.classList.contains('is-mobile')) return;
   root.classList.add('dusk-mobile');
   const $ = id => document.getElementById(id);
-  const I = window.MurielI18n;
+  const I = window.DuskI18n;
   const paths = {
     discover: '<circle cx="12" cy="12" r="9"/><path d="m16 8-3 5-5 3 3-5Z"/>',
     library: '<path d="M5 4v16M11 4v16M16 5l4 14"/>',
@@ -50,7 +50,7 @@
     return el;
   }
   function init() {
-    const core = window.MurielCore;
+    const core = window.DuskCore;
     if (!core || $('dusk-header')) return;
     const ui = window.DuskUiCore;
     const history = ui.createHistory(localStorage);
@@ -61,7 +61,7 @@
     playbar.before(playerAnchor);
     const header = node('header', 'dusk-header'); header.id = 'dusk-header';
     const back = button('Back', 'back', () => {
-      if (view === 'settings' && window.MurielSettingsBack?.()) return;
+      if (view === 'settings' && window.DuskSettingsBack?.()) return;
       route(tab === 'search' ? 'discover' : tab === 'library' ? 'dusk-library' : 'dusk-home');
     });
     const brand = node('div', 'dusk-header-brand');
@@ -386,8 +386,8 @@
         I.text(playbackStatus, streamFailMessage(''));
       } else playbackStatus.textContent = '';
     }
-    window.addEventListener('muriel:loading', playbackState);
-    window.addEventListener('muriel:stream-error', (e) => {
+    window.addEventListener('dusk:loading', playbackState);
+    window.addEventListener('dusk:stream-error', (e) => {
       streamFail = (e.detail && e.detail.code) || 'YT_NO_STREAM';
       attemptedLoad = true;
       playbackState();
@@ -452,19 +452,19 @@
     function updateSearchHint() { searchHint.hidden = !$('search-results-container').classList.contains('hidden'); }
     new MutationObserver(updateSearchHint).observe($('search-results-container'), { attributes: true, attributeFilter: ['class'] });
     updateSearchHint();
-    window.addEventListener('muriel:search', e => { history.rememberQuery(e.detail.query); renderSearchHistory(); });
-    window.addEventListener('muriel:artist', e => { history.rememberArtist(e.detail); renderSearchHistory(); });
-    window.addEventListener('muriel:loading', syncPlaybackFeedback);
+    window.addEventListener('dusk:search', e => { history.rememberQuery(e.detail.query); renderSearchHistory(); });
+    window.addEventListener('dusk:artist', e => { history.rememberArtist(e.detail); renderSearchHistory(); });
+    window.addEventListener('dusk:loading', syncPlaybackFeedback);
     for (const event of ['play','playing','pause','ended','error']) core.audio.addEventListener(event, syncPlaybackFeedback);
     new MutationObserver(changes => {
       if (changes.some(change => [...change.addedNodes].some(item => item.nodeType === 1 && (item.matches('[data-dusk-track-key], .track-row') || item.querySelector('[data-dusk-track-key], .track-row'))))) syncPlaybackFeedback();
     }).observe(main, { childList: true, subtree: true });
-    window.addEventListener('muriel:view', e => syncView(e.detail.view));
-    window.addEventListener('muriel:drawer', e => syncDrawer(e.detail));
-    window.addEventListener('muriel:track', syncTrack);
-    for (const event of ['muriel:home','muriel:library','online','offline']) window.addEventListener(event, scheduleRender);
+    window.addEventListener('dusk:view', e => syncView(e.detail.view));
+    window.addEventListener('dusk:drawer', e => syncDrawer(e.detail));
+    window.addEventListener('dusk:track', syncTrack);
+    for (const event of ['dusk:home','dusk:library','online','offline']) window.addEventListener(event, scheduleRender);
     new MutationObserver(scheduleRender).observe(root, { attributes: true, attributeFilter: ['data-dusk-hide-recent','data-dusk-hide-recommendations','data-dusk-hide-artists'] });
-    window.addEventListener('muriel:i18n', () => {
+    window.addEventListener('dusk:i18n', () => {
       document.querySelectorAll('[data-label]').forEach(el => el.setAttribute('aria-label', I.T(el.dataset.label)));
       nav.setAttribute('aria-label', I.T('Main navigation'));
       filters.setAttribute('aria-label', I.T('Discover'));
@@ -476,5 +476,5 @@
     syncDrawer({ open: core.state.isRightPanelOpen, tab: core.state.drawerTab });
     route('dusk-home');
   }
-  if (window.MurielCore) init(); else window.addEventListener('muriel:ready', init, { once: true });
+  if (window.DuskCore) init(); else window.addEventListener('dusk:ready', init, { once: true });
 })();

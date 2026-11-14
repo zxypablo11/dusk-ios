@@ -5,7 +5,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const MAX_FRAME_BYTES = 1024 * 1024;
-const CLIENT_ID = '1564605359610400929'; // Muriel's own Discord application
+const CLIENT_ID = '1384584152233545789'; // Dusk Discord application
 let socket = null;
 let buffer = Buffer.alloc(0);
 let activity = null;
@@ -124,7 +124,9 @@ function setPresence(rawTrack) {
   const state = cleanText(rawTrack && rawTrack.artist) || 'Unknown Artist';
   if (!details && !state) return { ok: false, error: 'Presence text is empty.' };
 
+  // type 2 = Listening → Discord shows "Listening to {name}". Portal app name is the fallback badge.
   const nextActivity = {
+    name: details,
     type: 2,
     details,
     state,

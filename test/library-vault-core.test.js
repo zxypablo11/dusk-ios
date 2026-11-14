@@ -22,7 +22,7 @@ test('vault keeps playlist metadata and drops audio blobs and local paths', () =
     ['devsize_favorites', JSON.stringify([{ title: 'Fav', artist: 'A', id: YT, platform: 'youtube' }])],
     ['devsize_history', JSON.stringify([{ title: 'Old', artist: 'Z', id: YT, platform: 'youtube', thumbnail: 'data:image/png;base64,xx' }])],
     ['dusk_themes_v1', JSON.stringify({ version: 1, active: 'graphite' })],
-    ['muriel_ui_lang', 'de'],
+    ['dusk_ui_lang', 'de'],
   ]));
   assert.equal(vault.kind, 'dusk-library-vault');
   assert.equal(vault.version, 1);
@@ -37,7 +37,7 @@ test('vault keeps playlist metadata and drops audio blobs and local paths', () =
   const hist = JSON.parse(vault.data.devsize_history);
   assert.ok(!String(hist[0].thumbnail || '').startsWith('data:'));
   assert.match(hist[0].thumbnail, /^https:\/\/i\.ytimg\.com\//);
-  assert.equal(vault.data.muriel_ui_lang, 'de');
+  assert.equal(vault.data.dusk_ui_lang, 'de');
   assert.ok(vault.data.dusk_themes_v1.includes('graphite'));
 });
 
